@@ -169,6 +169,42 @@ __device__ __forceinline__ void prefetch_b_stage_128x32(
     }
 }
 
+__device__ __forceinline__ void prefetch_a_stage_256x32_aligned(
+    const half* A,
+    half* sA_stage,
+    int block_row_start,
+    int row_A,
+    int col_A,
+    int K,
+    int k_base
+) {
+    #pragma unroll
+    for (int pass = 0; pass < 4; ++pass) {
+        const int local_row = pass * 64 + row_A;
+        half* dst = sA_stage + local_row * A_STRIDE + col_A;
+        const half* src = A + (block_row_start + local_row) * K + (k_base + col_A);
+        cp_async_cg_16B(dst, src);
+    }
+}
+
+__device__ __forceinline__ void prefetch_b_stage_128x32_aligned(
+    const half* B_col_major,
+    half* sB_stage,
+    int block_col_start,
+    int row_B,
+    int col_B,
+    int K,
+    int k_base
+) {
+    #pragma unroll
+    for (int pass = 0; pass < 2; ++pass) {
+        const int local_row = pass * 64 + row_B;
+        half* dst = sB_stage + local_row * B_STRIDE + col_B;
+        const half* src = B_col_major + (block_col_start + local_row) * K + (k_base + col_B);
+        cp_async_cg_16B(dst, src);
+    }
+}
+
 __device__ __forceinline__ void gemm_rotate3_load_stage_fragments_reg_pingpong_256_colb_MMA(
     const half* sA_stage,
     const half* sB_stage,
@@ -734,7 +770,7 @@ __global__ void flash_assign_kernel_256x128x32(
         // of the next centroid tile. Rotate once more so the next outer-loop iteration
         // starts directly from those prefetched stages.
         if (block_col_start + TILE_N < N) {
-            __pipeline_wait_prior(0);
+            __pipeline_wait_prior(1);
             __syncthreads();
             rotate_stage_triplet_3(current_stage, next_stage, prefetch_stage);
         }
@@ -754,6 +790,273 @@ __global__ void flash_assign_kernel_256x128x32(
             if (output_dists != nullptr) {
                 output_dists[global_row] = s_running_best_dist[row];
             }
+        }
+    }
+}
+
+__global__ void flash_assign_kernel_256x128x32_aligned(
+    const half* A,
+    const half* B_col_major,
+    const float* x_norm,
+    const float* c_norm,
+    int* output_ids,
+    float* output_dists,
+    int M,
+    int N,
+    int K
+) {
+    const int block_row = blockIdx.x;
+    const int block_row_start = block_row * TILE_M;
+
+    const int tid = threadIdx.x;
+    const int lane_id = tid % WARP_SIZE;
+    const int warp_id = tid / WARP_SIZE;
+    const int warp_row = (warp_id / 2) * 64;
+    const int warp_col = (warp_id % 2) * 64;
+
+    const int row_A = tid / 4;
+    const int col_A = (tid % 4) * 8;
+    const int row_B = tid / 4;
+    const int col_B = (tid % 4) * 8;
+
+    extern __shared__ half smem[];
+    auto sA = reinterpret_cast<half (*)[A_STAGE_ELEMS]>(smem);
+    auto sB = reinterpret_cast<half (*)[B_STAGE_ELEMS]>(smem + STAGE_COUNT * A_STAGE_ELEMS);
+    float* s_x_norm = reinterpret_cast<float*>(smem + STAGE_COUNT * A_STAGE_ELEMS + STAGE_COUNT * B_STAGE_ELEMS);
+    float* s_c_norm = s_x_norm + TILE_M;
+    float* s_running_best_dist = s_c_norm + TILE_N;
+    int* s_running_best_idx = reinterpret_cast<int*>(s_running_best_dist + TILE_M);
+    float* s_warp_row_min = reinterpret_cast<float*>(s_running_best_idx + TILE_M);
+    int* s_warp_row_idx = reinterpret_cast<int*>(s_warp_row_min + 8 * 64);
+
+    uint32_t a_regs[2][4][4];
+    uint32_t b_regs[2][8][2];
+    float c_regs[4][8][4];
+    float lane_row_min[8];
+    int lane_row_idx[8];
+
+    for (int idx = tid; idx < TILE_M; idx += THREAD_COUNT) {
+        s_x_norm[idx] = x_norm[block_row_start + idx];
+        s_running_best_dist[idx] = FLT_MAX;
+        s_running_best_idx[idx] = -1;
+    }
+    __syncthreads();
+
+    const int k_tile_count = K / K_TILE;
+    const int centroid_tile_count = N / TILE_N;
+    int current_stage = 0;
+    int next_stage = 1;
+    int prefetch_stage = 2;
+    int reg_curr = 0;
+    int reg_next = 1;
+
+    prefetch_a_stage_256x32_aligned(A, sA[current_stage], block_row_start, row_A, col_A, K, 0);
+    prefetch_b_stage_128x32_aligned(B_col_major, sB[current_stage], 0, row_B, col_B, K, 0);
+    __pipeline_commit();
+
+    // Fast-path assumptions guarantee K >= 128 and K % 32 == 0, so the startup always
+    // consists of two valid slices of the first centroid tile.
+    prefetch_a_stage_256x32_aligned(A, sA[next_stage], block_row_start, row_A, col_A, K, K_TILE);
+    prefetch_b_stage_128x32_aligned(B_col_major, sB[next_stage], 0, row_B, col_B, K, K_TILE);
+    __pipeline_commit();
+
+    __pipeline_wait_prior(1);
+    __syncthreads();
+
+    for (int block_col_start = 0; block_col_start < N; block_col_start += TILE_N) {
+        for (int idx = tid; idx < TILE_N; idx += THREAD_COUNT) {
+            s_c_norm[idx] = c_norm[block_col_start + idx];
+        }
+        __syncthreads();
+
+        #pragma unroll
+        for (int i = 0; i < 4; ++i) {
+            #pragma unroll
+            for (int j = 0; j < 8; ++j) {
+                c_regs[i][j][0] = 0.0f;
+                c_regs[i][j][1] = 0.0f;
+                c_regs[i][j][2] = 0.0f;
+                c_regs[i][j][3] = 0.0f;
+            }
+        }
+
+        const int outer_tile_idx = block_col_start / TILE_N;
+        const bool has_next_centroid_tile = (outer_tile_idx + 1) < centroid_tile_count;
+
+        auto compute_current_stage = [&](void) {
+            gemm_rotate3_load_stage_fragments_reg_pingpong_256_colb_MMA(
+                sA[current_stage], sB[current_stage], warp_row, warp_col, lane_id, reg_curr, 0, a_regs, b_regs);
+            gemm_rotate3_load_stage_fragments_reg_pingpong_256_colb_MMA(
+                sA[current_stage], sB[current_stage], warp_row, warp_col, lane_id, reg_next, WMMA, a_regs, b_regs);
+
+            gemm_rotate3_mma_reg_pingpong_256_colb_MMA(reg_curr, a_regs, b_regs, c_regs);
+            gemm_rotate3_mma_reg_pingpong_256_colb_MMA(reg_next, a_regs, b_regs, c_regs);
+        };
+
+        // Steady state: consume (j, k) while prefetching (j, k+2).
+        for (int k_tile_idx = 0; k_tile_idx < k_tile_count - 2; ++k_tile_idx) {
+            compute_current_stage();
+
+            const int k_prefetch = (k_tile_idx + 2) * K_TILE;
+            prefetch_a_stage_256x32_aligned(
+                A, sA[prefetch_stage], block_row_start, row_A, col_A, K, k_prefetch);
+            prefetch_b_stage_128x32_aligned(
+                B_col_major, sB[prefetch_stage], block_col_start, row_B, col_B, K, k_prefetch);
+            __pipeline_commit();
+
+            __pipeline_wait_prior(1);
+            __syncthreads();
+            rotate_stage_triplet_3(current_stage, next_stage, prefetch_stage);
+        }
+
+        // Tail iteration 1: consume (j, k_count-2), optionally prefetch (j+1, 0).
+        compute_current_stage();
+        if (has_next_centroid_tile) {
+            prefetch_a_stage_256x32_aligned(
+                A, sA[prefetch_stage], block_row_start, row_A, col_A, K, 0);
+            prefetch_b_stage_128x32_aligned(
+                B_col_major, sB[prefetch_stage], block_col_start + TILE_N, row_B, col_B, K, 0);
+            __pipeline_commit();
+        }
+        __pipeline_wait_prior(has_next_centroid_tile ? 1 : 0);
+        __syncthreads();
+        rotate_stage_triplet_3(current_stage, next_stage, prefetch_stage);
+
+        // Tail iteration 2: consume (j, k_count-1), optionally prefetch (j+1, 1).
+        compute_current_stage();
+        if (has_next_centroid_tile) {
+            prefetch_a_stage_256x32_aligned(
+                A, sA[prefetch_stage], block_row_start, row_A, col_A, K, K_TILE);
+            prefetch_b_stage_128x32_aligned(
+                B_col_major, sB[prefetch_stage], block_col_start + TILE_N, row_B, col_B, K, K_TILE);
+            __pipeline_commit();
+        }
+
+        #pragma unroll
+        for (int i = 0; i < 4; ++i) {
+            const int row0 = warp_row + i * 16 + lane_id / 4;
+            const int row1 = row0 + 8;
+            const float x_norm_row0 = s_x_norm[row0];
+            const float x_norm_row1 = s_x_norm[row1];
+
+            #pragma unroll
+            for (int j = 0; j < 8; ++j) {
+                const int col0 = warp_col + j * 8 + (lane_id % 4) * 2;
+                const float c_norm_col0 = s_c_norm[col0];
+                const float c_norm_col1 = s_c_norm[col0 + 1];
+
+                c_regs[i][j][0] = x_norm_row0 + c_norm_col0 - 2.0f * c_regs[i][j][0];
+                c_regs[i][j][1] = x_norm_row0 + c_norm_col1 - 2.0f * c_regs[i][j][1];
+                c_regs[i][j][2] = x_norm_row1 + c_norm_col0 - 2.0f * c_regs[i][j][2];
+                c_regs[i][j][3] = x_norm_row1 + c_norm_col1 - 2.0f * c_regs[i][j][3];
+            }
+        }
+
+        #pragma unroll
+        for (int r = 0; r < 8; ++r) {
+            lane_row_min[r] = FLT_MAX;
+            lane_row_idx[r] = -1;
+        }
+
+        #pragma unroll
+        for (int i = 0; i < 4; ++i) {
+            #pragma unroll
+            for (int j = 0; j < 8; ++j) {
+                const int col0 = warp_col + j * 8 + (lane_id % 4) * 2;
+                const int global_col0 = block_col_start + col0;
+                const int global_col1 = global_col0 + 1;
+
+                const float dist00 = c_regs[i][j][0];
+                const float dist01 = c_regs[i][j][1];
+                const float dist10 = c_regs[i][j][2];
+                const float dist11 = c_regs[i][j][3];
+
+                if (dist00 < lane_row_min[2 * i + 0]) {
+                    lane_row_min[2 * i + 0] = dist00;
+                    lane_row_idx[2 * i + 0] = global_col0;
+                }
+                if (dist01 < lane_row_min[2 * i + 0]) {
+                    lane_row_min[2 * i + 0] = dist01;
+                    lane_row_idx[2 * i + 0] = global_col1;
+                }
+                if (dist10 < lane_row_min[2 * i + 1]) {
+                    lane_row_min[2 * i + 1] = dist10;
+                    lane_row_idx[2 * i + 1] = global_col0;
+                }
+                if (dist11 < lane_row_min[2 * i + 1]) {
+                    lane_row_min[2 * i + 1] = dist11;
+                    lane_row_idx[2 * i + 1] = global_col1;
+                }
+            }
+        }
+
+        const int lane_in_row_group = lane_id % 4;
+        #pragma unroll
+        for (int r = 0; r < 8; ++r) {
+            float reduced_min = lane_row_min[r];
+            int reduced_idx = lane_row_idx[r];
+            float other_min = __shfl_down_sync(0xffffffffu, reduced_min, 2, 4);
+            int other_idx = __shfl_down_sync(0xffffffffu, reduced_idx, 2, 4);
+            if (other_min < reduced_min) {
+                reduced_min = other_min;
+                reduced_idx = other_idx;
+            }
+            other_min = __shfl_down_sync(0xffffffffu, reduced_min, 1, 4);
+            other_idx = __shfl_down_sync(0xffffffffu, reduced_idx, 1, 4);
+            if (other_min < reduced_min) {
+                reduced_min = other_min;
+                reduced_idx = other_idx;
+            }
+            lane_row_min[r] = reduced_min;
+            lane_row_idx[r] = reduced_idx;
+        }
+
+        if (lane_in_row_group == 0) {
+            const int subgroup_id = lane_id / 4;
+            #pragma unroll
+            for (int i = 0; i < 4; ++i) {
+                const int row_local0 = i * 16 + subgroup_id;
+                const int row_local1 = row_local0 + 8;
+                s_warp_row_min[warp_id * 64 + row_local0] = lane_row_min[2 * i + 0];
+                s_warp_row_idx[warp_id * 64 + row_local0] = lane_row_idx[2 * i + 0];
+                s_warp_row_min[warp_id * 64 + row_local1] = lane_row_min[2 * i + 1];
+                s_warp_row_idx[warp_id * 64 + row_local1] = lane_row_idx[2 * i + 1];
+            }
+        }
+        __syncthreads();
+
+        for (int row = tid; row < TILE_M; row += THREAD_COUNT) {
+            const int warp_row_group = row / 64;
+            const int row_in_warp = row % 64;
+            const int left_warp = warp_row_group * 2 + 0;
+            const int right_warp = warp_row_group * 2 + 1;
+
+            float best_dist = s_warp_row_min[left_warp * 64 + row_in_warp];
+            int best_idx = s_warp_row_idx[left_warp * 64 + row_in_warp];
+            const float right_dist = s_warp_row_min[right_warp * 64 + row_in_warp];
+            const int right_idx = s_warp_row_idx[right_warp * 64 + row_in_warp];
+            if (right_dist < best_dist) {
+                best_dist = right_dist;
+                best_idx = right_idx;
+            }
+            if (best_dist < s_running_best_dist[row]) {
+                s_running_best_dist[row] = best_dist;
+                s_running_best_idx[row] = best_idx;
+            }
+        }
+        __syncthreads();
+
+        if (block_col_start + TILE_N < N) {
+            __pipeline_wait_prior(1);
+            __syncthreads();
+            rotate_stage_triplet_3(current_stage, next_stage, prefetch_stage);
+        }
+    }
+
+    for (int row = tid; row < TILE_M; row += THREAD_COUNT) {
+        output_ids[block_row_start + row] = s_running_best_idx[row];
+        if (output_dists != nullptr) {
+            output_dists[block_row_start + row] = s_running_best_dist[row];
         }
     }
 }
@@ -840,17 +1143,27 @@ cudaError_t launch_flash_assign_kernel_256x128x32(
         return err;
     }
 
-    flash_assign_kernel_256x128x32<<<grid, block, smem_bytes, stream>>>(
-        A,
-        B_col_major,
-        x_norm,
-        c_norm,
-        output_ids,
-        output_dists,
-        M,
-        N,
-        K
-    );
+    const bool use_aligned_fast_path =
+        (M % TILE_M == 0) &&
+        (N % TILE_N == 0) &&
+        (K >= 128) &&
+        (K % K_TILE == 0);
+
+    if (use_aligned_fast_path) {
+        err = cudaFuncSetAttribute(
+            flash_assign_kernel_256x128x32_aligned,
+            cudaFuncAttributeMaxDynamicSharedMemorySize,
+            static_cast<int>(smem_bytes)
+        );
+        if (err != cudaSuccess) {
+            return err;
+        }
+        flash_assign_kernel_256x128x32_aligned<<<grid, block, smem_bytes, stream>>>(
+            A, B_col_major, x_norm, c_norm, output_ids, output_dists, M, N, K);
+    } else {
+        flash_assign_kernel_256x128x32<<<grid, block, smem_bytes, stream>>>(
+            A, B_col_major, x_norm, c_norm, output_ids, output_dists, M, N, K);
+    }
     return cudaGetLastError();
 }
 
