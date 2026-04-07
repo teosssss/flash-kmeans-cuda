@@ -128,16 +128,16 @@ def write_svg(path: Path, summary_rows: list[dict]) -> None:
         )
         return
 
-    width = 1080
-    height = 240 + 90 * len(summary_rows)
+    width = 1180
+    height = 240 + 110 * len(summary_rows)
     left = 280
-    right = 120
+    right = 180
     top = 90
     bottom = 60
     plot_width = width - left - right
     plot_height = height - top - bottom
     bar_h = 28
-    row_gap = 90
+    row_gap = 110
     max_speed = max(row["best_speedup"] for row in summary_rows)
     x_max = max(1.2, math.ceil(max_speed * 10.0) / 10.0)
 
@@ -165,9 +165,11 @@ def write_svg(path: Path, summary_rows: list[dict]) -> None:
         tick += 0.2
 
     for idx, row in enumerate(summary_rows):
-        y = top + idx * row_gap + 26
+        y = top + idx * row_gap + 30
         x_end = x_pos(row["mean_speedup"])
         best_x = x_pos(row["best_speedup"])
+        mean_label_x = min(x_end + 10, left + plot_width - 120)
+        best_label_x = min(best_x + 12, left + plot_width - 210)
         elements.append(
             f'<text x="{left - 18}" y="{y + 6:.1f}" text-anchor="end" font-size="17" '
             'font-family="Helvetica, Arial, sans-serif" fill="#374151">'
@@ -175,16 +177,16 @@ def write_svg(path: Path, summary_rows: list[dict]) -> None:
         )
         elements.append(f'<rect x="{left}" y="{y - bar_h / 2:.1f}" width="{x_end - left:.1f}" height="{bar_h}" rx="6" fill="#0f766e" opacity="0.92"/>')
         elements.append(
-            f'<text x="{x_end + 10:.1f}" y="{y + 5:.1f}" font-size="14" font-family="Helvetica, Arial, sans-serif" fill="#111827">'
+            f'<text x="{mean_label_x:.1f}" y="{y - 20:.1f}" font-size="14" font-family="Helvetica, Arial, sans-serif" fill="#111827">'
             f"mean {row['mean_speedup']:.3f}x</text>"
         )
         elements.append(f'<line x1="{best_x:.1f}" y1="{y - 24:.1f}" x2="{best_x:.1f}" y2="{y + 24:.1f}" stroke="#1d4ed8" stroke-width="3"/>')
         elements.append(
-            f'<text x="{best_x + 10:.1f}" y="{y - 12:.1f}" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#1d4ed8">'
+            f'<text x="{best_label_x:.1f}" y="{y + 28:.1f}" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#1d4ed8">'
             f"best {row['best_speedup']:.3f}x</text>"
         )
         elements.append(
-            f'<text x="{best_x + 10:.1f}" y="{y + 7:.1f}" font-size="12" font-family="Helvetica, Arial, sans-serif" fill="#4b5563">'
+            f'<text x="{best_label_x:.1f}" y="{y + 46:.1f}" font-size="12" font-family="Helvetica, Arial, sans-serif" fill="#4b5563">'
             f"{row['best_shape']}</text>"
         )
 

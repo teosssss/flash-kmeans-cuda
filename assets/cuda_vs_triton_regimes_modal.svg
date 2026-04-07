@@ -1,59 +1,59 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="510" viewBox="0 0 1080 510">
+<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="570" viewBox="0 0 1180 570">
 <rect width="100%" height="100%" fill="#fffdf8"/>
 <text x="280" y="36" font-size="28" font-family="Helvetica, Arial, sans-serif" fill="#1f2937">CUDA vs Triton: representative assignment regimes</text>
 <text x="280" y="58" font-size="15" font-family="Helvetica, Arial, sans-serif" fill="#4b5563">Bars show mean speedup by regime. Labels on the right show the best point in each regime.</text>
-<line x1="280.0" y1="90" x2="280.0" y2="450" stroke="#e5e7eb" stroke-width="1"/>
-<text x="280.0" y="474" text-anchor="middle" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">0.0</text>
-<line x1="320.0" y1="90" x2="320.0" y2="450" stroke="#e5e7eb" stroke-width="1"/>
-<text x="320.0" y="474" text-anchor="middle" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">0.2</text>
-<line x1="360.0" y1="90" x2="360.0" y2="450" stroke="#e5e7eb" stroke-width="1"/>
-<text x="360.0" y="474" text-anchor="middle" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">0.4</text>
-<line x1="400.0" y1="90" x2="400.0" y2="450" stroke="#e5e7eb" stroke-width="1"/>
-<text x="400.0" y="474" text-anchor="middle" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">0.6</text>
-<line x1="440.0" y1="90" x2="440.0" y2="450" stroke="#e5e7eb" stroke-width="1"/>
-<text x="440.0" y="474" text-anchor="middle" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">0.8</text>
-<line x1="480.0" y1="90" x2="480.0" y2="450" stroke="#d97706" stroke-width="2"/>
-<text x="480.0" y="474" text-anchor="middle" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">1.0</text>
-<line x1="520.0" y1="90" x2="520.0" y2="450" stroke="#e5e7eb" stroke-width="1"/>
-<text x="520.0" y="474" text-anchor="middle" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">1.2</text>
-<line x1="560.0" y1="90" x2="560.0" y2="450" stroke="#e5e7eb" stroke-width="1"/>
-<text x="560.0" y="474" text-anchor="middle" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">1.4</text>
-<line x1="600.0" y1="90" x2="600.0" y2="450" stroke="#e5e7eb" stroke-width="1"/>
-<text x="600.0" y="474" text-anchor="middle" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">1.6</text>
-<line x1="640.0" y1="90" x2="640.0" y2="450" stroke="#e5e7eb" stroke-width="1"/>
-<text x="640.0" y="474" text-anchor="middle" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">1.8</text>
-<line x1="680.0" y1="90" x2="680.0" y2="450" stroke="#e5e7eb" stroke-width="1"/>
-<text x="680.0" y="474" text-anchor="middle" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">2.0</text>
-<line x1="720.0" y1="90" x2="720.0" y2="450" stroke="#e5e7eb" stroke-width="1"/>
-<text x="720.0" y="474" text-anchor="middle" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">2.2</text>
-<line x1="760.0" y1="90" x2="760.0" y2="450" stroke="#e5e7eb" stroke-width="1"/>
-<text x="760.0" y="474" text-anchor="middle" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">2.4</text>
-<line x1="800.0" y1="90" x2="800.0" y2="450" stroke="#e5e7eb" stroke-width="1"/>
-<text x="800.0" y="474" text-anchor="middle" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">2.6</text>
-<line x1="840.0" y1="90" x2="840.0" y2="450" stroke="#e5e7eb" stroke-width="1"/>
-<text x="840.0" y="474" text-anchor="middle" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">2.8</text>
-<line x1="880.0" y1="90" x2="880.0" y2="450" stroke="#e5e7eb" stroke-width="1"/>
-<text x="880.0" y="474" text-anchor="middle" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">3.0</text>
-<line x1="920.0" y1="90" x2="920.0" y2="450" stroke="#e5e7eb" stroke-width="1"/>
-<text x="920.0" y="474" text-anchor="middle" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">3.2</text>
-<line x1="960.0" y1="90" x2="960.0" y2="450" stroke="#e5e7eb" stroke-width="1"/>
-<text x="960.0" y="474" text-anchor="middle" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">3.4</text>
-<text x="262" y="122.0" text-anchor="end" font-size="17" font-family="Helvetica, Arial, sans-serif" fill="#374151">Large M Large N</text>
-<rect x="280" y="102.0" width="274.0" height="28" rx="6" fill="#0f766e" opacity="0.92"/>
-<text x="564.0" y="121.0" font-size="14" font-family="Helvetica, Arial, sans-serif" fill="#111827">mean 1.370x</text>
-<line x1="581.3" y1="92.0" x2="581.3" y2="140.0" stroke="#1d4ed8" stroke-width="3"/>
-<text x="591.3" y="104.0" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#1d4ed8">best 1.506x</text>
-<text x="591.3" y="123.0" font-size="12" font-family="Helvetica, Arial, sans-serif" fill="#4b5563">M=262,144 N=32,768 K=512</text>
-<text x="262" y="212.0" text-anchor="end" font-size="17" font-family="Helvetica, Arial, sans-serif" fill="#374151">Large M Small N</text>
-<rect x="280" y="192.0" width="446.9" height="28" rx="6" fill="#0f766e" opacity="0.92"/>
-<text x="736.9" y="211.0" font-size="14" font-family="Helvetica, Arial, sans-serif" fill="#111827">mean 2.234x</text>
-<line x1="762.7" y1="182.0" x2="762.7" y2="230.0" stroke="#1d4ed8" stroke-width="3"/>
-<text x="772.7" y="194.0" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#1d4ed8">best 2.414x</text>
-<text x="772.7" y="213.0" font-size="12" font-family="Helvetica, Arial, sans-serif" fill="#4b5563">M=1,048,576 N=1,024 K=128</text>
-<text x="262" y="302.0" text-anchor="end" font-size="17" font-family="Helvetica, Arial, sans-serif" fill="#374151">Small M Small N</text>
-<rect x="280" y="282.0" width="482.6" height="28" rx="6" fill="#0f766e" opacity="0.92"/>
-<text x="772.6" y="301.0" font-size="14" font-family="Helvetica, Arial, sans-serif" fill="#111827">mean 2.413x</text>
-<line x1="956.2" y1="272.0" x2="956.2" y2="320.0" stroke="#1d4ed8" stroke-width="3"/>
-<text x="966.2" y="284.0" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#1d4ed8">best 3.381x</text>
-<text x="966.2" y="303.0" font-size="12" font-family="Helvetica, Arial, sans-serif" fill="#4b5563">M=4,096 N=1,024 K=128</text>
+<line x1="280.0" y1="90" x2="280.0" y2="510" stroke="#e5e7eb" stroke-width="1"/>
+<text x="280.0" y="534" text-anchor="middle" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">0.0</text>
+<line x1="322.4" y1="90" x2="322.4" y2="510" stroke="#e5e7eb" stroke-width="1"/>
+<text x="322.4" y="534" text-anchor="middle" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">0.2</text>
+<line x1="364.7" y1="90" x2="364.7" y2="510" stroke="#e5e7eb" stroke-width="1"/>
+<text x="364.7" y="534" text-anchor="middle" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">0.4</text>
+<line x1="407.1" y1="90" x2="407.1" y2="510" stroke="#e5e7eb" stroke-width="1"/>
+<text x="407.1" y="534" text-anchor="middle" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">0.6</text>
+<line x1="449.4" y1="90" x2="449.4" y2="510" stroke="#e5e7eb" stroke-width="1"/>
+<text x="449.4" y="534" text-anchor="middle" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">0.8</text>
+<line x1="491.8" y1="90" x2="491.8" y2="510" stroke="#d97706" stroke-width="2"/>
+<text x="491.8" y="534" text-anchor="middle" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">1.0</text>
+<line x1="534.1" y1="90" x2="534.1" y2="510" stroke="#e5e7eb" stroke-width="1"/>
+<text x="534.1" y="534" text-anchor="middle" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">1.2</text>
+<line x1="576.5" y1="90" x2="576.5" y2="510" stroke="#e5e7eb" stroke-width="1"/>
+<text x="576.5" y="534" text-anchor="middle" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">1.4</text>
+<line x1="618.8" y1="90" x2="618.8" y2="510" stroke="#e5e7eb" stroke-width="1"/>
+<text x="618.8" y="534" text-anchor="middle" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">1.6</text>
+<line x1="661.2" y1="90" x2="661.2" y2="510" stroke="#e5e7eb" stroke-width="1"/>
+<text x="661.2" y="534" text-anchor="middle" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">1.8</text>
+<line x1="703.5" y1="90" x2="703.5" y2="510" stroke="#e5e7eb" stroke-width="1"/>
+<text x="703.5" y="534" text-anchor="middle" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">2.0</text>
+<line x1="745.9" y1="90" x2="745.9" y2="510" stroke="#e5e7eb" stroke-width="1"/>
+<text x="745.9" y="534" text-anchor="middle" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">2.2</text>
+<line x1="788.2" y1="90" x2="788.2" y2="510" stroke="#e5e7eb" stroke-width="1"/>
+<text x="788.2" y="534" text-anchor="middle" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">2.4</text>
+<line x1="830.6" y1="90" x2="830.6" y2="510" stroke="#e5e7eb" stroke-width="1"/>
+<text x="830.6" y="534" text-anchor="middle" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">2.6</text>
+<line x1="872.9" y1="90" x2="872.9" y2="510" stroke="#e5e7eb" stroke-width="1"/>
+<text x="872.9" y="534" text-anchor="middle" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">2.8</text>
+<line x1="915.3" y1="90" x2="915.3" y2="510" stroke="#e5e7eb" stroke-width="1"/>
+<text x="915.3" y="534" text-anchor="middle" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">3.0</text>
+<line x1="957.6" y1="90" x2="957.6" y2="510" stroke="#e5e7eb" stroke-width="1"/>
+<text x="957.6" y="534" text-anchor="middle" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">3.2</text>
+<line x1="1000.0" y1="90" x2="1000.0" y2="510" stroke="#e5e7eb" stroke-width="1"/>
+<text x="1000.0" y="534" text-anchor="middle" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">3.4</text>
+<text x="262" y="126.0" text-anchor="end" font-size="17" font-family="Helvetica, Arial, sans-serif" fill="#374151">Large M Large N</text>
+<rect x="280" y="106.0" width="290.1" height="28" rx="6" fill="#0f766e" opacity="0.92"/>
+<text x="580.1" y="100.0" font-size="14" font-family="Helvetica, Arial, sans-serif" fill="#111827">mean 1.370x</text>
+<line x1="598.9" y1="96.0" x2="598.9" y2="144.0" stroke="#1d4ed8" stroke-width="3"/>
+<text x="610.9" y="148.0" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#1d4ed8">best 1.506x</text>
+<text x="610.9" y="166.0" font-size="12" font-family="Helvetica, Arial, sans-serif" fill="#4b5563">M=262,144 N=32,768 K=512</text>
+<text x="262" y="236.0" text-anchor="end" font-size="17" font-family="Helvetica, Arial, sans-serif" fill="#374151">Large M Small N</text>
+<rect x="280" y="216.0" width="473.1" height="28" rx="6" fill="#0f766e" opacity="0.92"/>
+<text x="763.1" y="210.0" font-size="14" font-family="Helvetica, Arial, sans-serif" fill="#111827">mean 2.234x</text>
+<line x1="791.2" y1="206.0" x2="791.2" y2="254.0" stroke="#1d4ed8" stroke-width="3"/>
+<text x="790.0" y="258.0" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#1d4ed8">best 2.414x</text>
+<text x="790.0" y="276.0" font-size="12" font-family="Helvetica, Arial, sans-serif" fill="#4b5563">M=1,048,576 N=1,024 K=128</text>
+<text x="262" y="346.0" text-anchor="end" font-size="17" font-family="Helvetica, Arial, sans-serif" fill="#374151">Small M Small N</text>
+<rect x="280" y="326.0" width="511.0" height="28" rx="6" fill="#0f766e" opacity="0.92"/>
+<text x="801.0" y="320.0" font-size="14" font-family="Helvetica, Arial, sans-serif" fill="#111827">mean 2.413x</text>
+<line x1="996.0" y1="316.0" x2="996.0" y2="364.0" stroke="#1d4ed8" stroke-width="3"/>
+<text x="790.0" y="368.0" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#1d4ed8">best 3.381x</text>
+<text x="790.0" y="386.0" font-size="12" font-family="Helvetica, Arial, sans-serif" fill="#4b5563">M=4,096 N=1,024 K=128</text>
 </svg>
