@@ -1,88 +1,94 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1260" height="760" viewBox="0 0 1260 760">
+<svg xmlns="http://www.w3.org/2000/svg" width="1560" height="900" viewBox="0 0 1560 900">
 <rect width="100%" height="100%" fill="#fffdf8"/>
 <text x="90" y="36" font-size="28" font-family="Helvetica, Arial, sans-serif" fill="#1f2937">CUDA vs Triton: best kernel per shape</text>
 <text x="90" y="58" font-size="15" font-family="Helvetica, Arial, sans-serif" fill="#4b5563">Speedup is Triton time divided by CUDA time. Values above 1.0 mean CUDA is faster.</text>
-<line x1="90" y1="610.0" x2="1220" y2="610.0" stroke="#e5e7eb" stroke-width="1"/>
-<text x="78" y="615.0" text-anchor="end" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">0.9</text>
-<line x1="90" y1="588.4" x2="1220" y2="588.4" stroke="#d97706" stroke-width="2"/>
-<text x="78" y="593.4" text-anchor="end" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">1.0</text>
-<line x1="90" y1="566.8" x2="1220" y2="566.8" stroke="#e5e7eb" stroke-width="1"/>
-<text x="78" y="571.8" text-anchor="end" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">1.1</text>
-<line x1="90" y1="545.2" x2="1220" y2="545.2" stroke="#e5e7eb" stroke-width="1"/>
-<text x="78" y="550.2" text-anchor="end" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">1.2</text>
-<line x1="90" y1="523.6" x2="1220" y2="523.6" stroke="#e5e7eb" stroke-width="1"/>
-<text x="78" y="528.6" text-anchor="end" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">1.3</text>
-<line x1="90" y1="502.0" x2="1220" y2="502.0" stroke="#e5e7eb" stroke-width="1"/>
-<text x="78" y="507.0" text-anchor="end" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">1.4</text>
-<line x1="90" y1="480.4" x2="1220" y2="480.4" stroke="#e5e7eb" stroke-width="1"/>
-<text x="78" y="485.4" text-anchor="end" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">1.5</text>
-<line x1="90" y1="458.8" x2="1220" y2="458.8" stroke="#e5e7eb" stroke-width="1"/>
-<text x="78" y="463.8" text-anchor="end" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">1.6</text>
-<line x1="90" y1="437.2" x2="1220" y2="437.2" stroke="#e5e7eb" stroke-width="1"/>
-<text x="78" y="442.2" text-anchor="end" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">1.7</text>
-<line x1="90" y1="415.6" x2="1220" y2="415.6" stroke="#e5e7eb" stroke-width="1"/>
-<text x="78" y="420.6" text-anchor="end" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">1.8</text>
-<line x1="90" y1="394.0" x2="1220" y2="394.0" stroke="#e5e7eb" stroke-width="1"/>
-<text x="78" y="399.0" text-anchor="end" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">1.9</text>
-<line x1="90" y1="372.4" x2="1220" y2="372.4" stroke="#e5e7eb" stroke-width="1"/>
-<text x="78" y="377.4" text-anchor="end" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">2.0</text>
-<line x1="90" y1="350.8" x2="1220" y2="350.8" stroke="#e5e7eb" stroke-width="1"/>
-<text x="78" y="355.8" text-anchor="end" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">2.1</text>
-<line x1="90" y1="329.2" x2="1220" y2="329.2" stroke="#e5e7eb" stroke-width="1"/>
-<text x="78" y="334.2" text-anchor="end" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">2.2</text>
-<line x1="90" y1="307.6" x2="1220" y2="307.6" stroke="#e5e7eb" stroke-width="1"/>
-<text x="78" y="312.6" text-anchor="end" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">2.3</text>
-<line x1="90" y1="286.0" x2="1220" y2="286.0" stroke="#e5e7eb" stroke-width="1"/>
-<text x="78" y="291.0" text-anchor="end" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">2.4</text>
-<line x1="90" y1="264.4" x2="1220" y2="264.4" stroke="#e5e7eb" stroke-width="1"/>
-<text x="78" y="269.4" text-anchor="end" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">2.5</text>
-<line x1="90" y1="242.8" x2="1220" y2="242.8" stroke="#e5e7eb" stroke-width="1"/>
-<text x="78" y="247.8" text-anchor="end" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">2.6</text>
-<line x1="90" y1="221.2" x2="1220" y2="221.2" stroke="#e5e7eb" stroke-width="1"/>
-<text x="78" y="226.2" text-anchor="end" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">2.7</text>
-<line x1="90" y1="199.6" x2="1220" y2="199.6" stroke="#e5e7eb" stroke-width="1"/>
-<text x="78" y="204.6" text-anchor="end" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">2.8</text>
-<line x1="90" y1="178.0" x2="1220" y2="178.0" stroke="#e5e7eb" stroke-width="1"/>
-<text x="78" y="183.0" text-anchor="end" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">2.9</text>
-<line x1="90" y1="156.4" x2="1220" y2="156.4" stroke="#e5e7eb" stroke-width="1"/>
-<text x="78" y="161.4" text-anchor="end" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">3.0</text>
-<line x1="90" y1="134.8" x2="1220" y2="134.8" stroke="#e5e7eb" stroke-width="1"/>
-<text x="78" y="139.8" text-anchor="end" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">3.1</text>
-<line x1="90" y1="113.2" x2="1220" y2="113.2" stroke="#e5e7eb" stroke-width="1"/>
-<text x="78" y="118.2" text-anchor="end" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">3.2</text>
-<line x1="90" y1="91.6" x2="1220" y2="91.6" stroke="#e5e7eb" stroke-width="1"/>
-<text x="78" y="96.6" text-anchor="end" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">3.3</text>
-<line x1="90" y1="70.0" x2="1220" y2="70.0" stroke="#e5e7eb" stroke-width="1"/>
-<text x="78" y="75.0" text-anchor="end" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">3.4</text>
-<polyline fill="none" stroke="#0f766e" stroke-width="3" points="90.0,87.4 184.2,420.3 278.3,564.3 372.5,544.8 466.7,346.2 560.8,480.7 655.0,459.4 749.2,505.2 843.3,518.6 937.5,532.9 1031.7,431.8 1125.8,394.2 1220.0,453.5"/>
-<circle cx="90.0" cy="87.4" r="5.5" fill="#0f766e" stroke="#ffffff" stroke-width="2"/>
-<text transform="translate(90.0,634) rotate(35)" font-size="12" font-family="Helvetica, Arial, sans-serif" fill="#374151">M=4,096 N=1,024 K=128</text>
-<circle cx="184.2" cy="420.3" r="5.5" fill="#0f766e" stroke="#ffffff" stroke-width="2"/>
-<text transform="translate(184.2,634) rotate(35)" font-size="12" font-family="Helvetica, Arial, sans-serif" fill="#374151">M=8,192 N=2,048 K=128</text>
-<circle cx="278.3" cy="564.3" r="5.5" fill="#0f766e" stroke="#ffffff" stroke-width="2"/>
-<text transform="translate(278.3,634) rotate(35)" font-size="12" font-family="Helvetica, Arial, sans-serif" fill="#374151">M=32,768 N=4,096 K=128</text>
-<circle cx="372.5" cy="544.8" r="5.5" fill="#0f766e" stroke="#ffffff" stroke-width="2"/>
-<text transform="translate(372.5,634) rotate(35)" font-size="12" font-family="Helvetica, Arial, sans-serif" fill="#374151">M=131,072 N=16,384 K=128</text>
-<circle cx="466.7" cy="346.2" r="5.5" fill="#0f766e" stroke="#ffffff" stroke-width="2"/>
-<text transform="translate(466.7,634) rotate(35)" font-size="12" font-family="Helvetica, Arial, sans-serif" fill="#374151">M=4,096 N=1,024 K=256</text>
-<circle cx="560.8" cy="480.7" r="5.5" fill="#0f766e" stroke="#ffffff" stroke-width="2"/>
-<text transform="translate(560.8,634) rotate(35)" font-size="12" font-family="Helvetica, Arial, sans-serif" fill="#374151">M=8,192 N=2,048 K=256</text>
-<circle cx="655.0" cy="459.4" r="5.5" fill="#0f766e" stroke="#ffffff" stroke-width="2"/>
-<text transform="translate(655.0,634) rotate(35)" font-size="12" font-family="Helvetica, Arial, sans-serif" fill="#374151">M=32,768 N=4,096 K=256</text>
-<circle cx="749.2" cy="505.2" r="5.5" fill="#0f766e" stroke="#ffffff" stroke-width="2"/>
-<text transform="translate(749.2,634) rotate(35)" font-size="12" font-family="Helvetica, Arial, sans-serif" fill="#374151">M=131,072 N=16,384 K=256</text>
-<circle cx="843.3" cy="518.6" r="5.5" fill="#0f766e" stroke="#ffffff" stroke-width="2"/>
-<text transform="translate(843.3,634) rotate(35)" font-size="12" font-family="Helvetica, Arial, sans-serif" fill="#374151">M=262,144 N=32,768 K=256</text>
-<circle cx="937.5" cy="532.9" r="5.5" fill="#0f766e" stroke="#ffffff" stroke-width="2"/>
-<text transform="translate(937.5,634) rotate(35)" font-size="12" font-family="Helvetica, Arial, sans-serif" fill="#374151">M=4,096 N=1,024 K=512</text>
-<circle cx="1031.7" cy="431.8" r="5.5" fill="#0f766e" stroke="#ffffff" stroke-width="2"/>
-<text transform="translate(1031.7,634) rotate(35)" font-size="12" font-family="Helvetica, Arial, sans-serif" fill="#374151">M=8,192 N=2,048 K=512</text>
-<circle cx="1125.8" cy="394.2" r="5.5" fill="#0f766e" stroke="#ffffff" stroke-width="2"/>
-<text transform="translate(1125.8,634) rotate(35)" font-size="12" font-family="Helvetica, Arial, sans-serif" fill="#374151">M=32,768 N=4,096 K=512</text>
-<circle cx="1220.0" cy="453.5" r="5.5" fill="#0f766e" stroke="#ffffff" stroke-width="2"/>
-<text transform="translate(1220.0,634) rotate(35)" font-size="12" font-family="Helvetica, Arial, sans-serif" fill="#374151">M=131,072 N=16,384 K=512</text>
-<rect x="940" y="88" width="240" height="90" rx="10" fill="#ffffff" stroke="#e5e7eb"/>
-<text x="956" y="116" font-size="14" font-family="Helvetica, Arial, sans-serif" fill="#111827">Mean speedup: 1.680x</text>
-<text x="956" y="138" font-size="14" font-family="Helvetica, Arial, sans-serif" fill="#111827">Geomean speedup: 1.611x</text>
-<text x="956" y="160" font-size="14" font-family="Helvetica, Arial, sans-serif" fill="#111827">Best speedup: 3.319x</text>
+<line x1="90" y1="640.0" x2="1440" y2="640.0" stroke="#e5e7eb" stroke-width="1"/>
+<text x="78" y="645.0" text-anchor="end" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">0.9</text>
+<line x1="90" y1="619.6" x2="1440" y2="619.6" stroke="#d97706" stroke-width="2"/>
+<text x="78" y="624.6" text-anchor="end" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">1.0</text>
+<line x1="90" y1="599.3" x2="1440" y2="599.3" stroke="#e5e7eb" stroke-width="1"/>
+<text x="78" y="604.3" text-anchor="end" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">1.1</text>
+<line x1="90" y1="578.9" x2="1440" y2="578.9" stroke="#e5e7eb" stroke-width="1"/>
+<text x="78" y="583.9" text-anchor="end" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">1.2</text>
+<line x1="90" y1="558.6" x2="1440" y2="558.6" stroke="#e5e7eb" stroke-width="1"/>
+<text x="78" y="563.6" text-anchor="end" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">1.3</text>
+<line x1="90" y1="538.2" x2="1440" y2="538.2" stroke="#e5e7eb" stroke-width="1"/>
+<text x="78" y="543.2" text-anchor="end" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">1.4</text>
+<line x1="90" y1="517.9" x2="1440" y2="517.9" stroke="#e5e7eb" stroke-width="1"/>
+<text x="78" y="522.9" text-anchor="end" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">1.5</text>
+<line x1="90" y1="497.5" x2="1440" y2="497.5" stroke="#e5e7eb" stroke-width="1"/>
+<text x="78" y="502.5" text-anchor="end" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">1.6</text>
+<line x1="90" y1="477.1" x2="1440" y2="477.1" stroke="#e5e7eb" stroke-width="1"/>
+<text x="78" y="482.1" text-anchor="end" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">1.7</text>
+<line x1="90" y1="456.8" x2="1440" y2="456.8" stroke="#e5e7eb" stroke-width="1"/>
+<text x="78" y="461.8" text-anchor="end" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">1.8</text>
+<line x1="90" y1="436.4" x2="1440" y2="436.4" stroke="#e5e7eb" stroke-width="1"/>
+<text x="78" y="441.4" text-anchor="end" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">1.9</text>
+<line x1="90" y1="416.1" x2="1440" y2="416.1" stroke="#e5e7eb" stroke-width="1"/>
+<text x="78" y="421.1" text-anchor="end" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">2.0</text>
+<line x1="90" y1="395.7" x2="1440" y2="395.7" stroke="#e5e7eb" stroke-width="1"/>
+<text x="78" y="400.7" text-anchor="end" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">2.1</text>
+<line x1="90" y1="375.4" x2="1440" y2="375.4" stroke="#e5e7eb" stroke-width="1"/>
+<text x="78" y="380.4" text-anchor="end" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">2.2</text>
+<line x1="90" y1="355.0" x2="1440" y2="355.0" stroke="#e5e7eb" stroke-width="1"/>
+<text x="78" y="360.0" text-anchor="end" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">2.3</text>
+<line x1="90" y1="334.6" x2="1440" y2="334.6" stroke="#e5e7eb" stroke-width="1"/>
+<text x="78" y="339.6" text-anchor="end" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">2.4</text>
+<line x1="90" y1="314.3" x2="1440" y2="314.3" stroke="#e5e7eb" stroke-width="1"/>
+<text x="78" y="319.3" text-anchor="end" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">2.5</text>
+<line x1="90" y1="293.9" x2="1440" y2="293.9" stroke="#e5e7eb" stroke-width="1"/>
+<text x="78" y="298.9" text-anchor="end" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">2.6</text>
+<line x1="90" y1="273.6" x2="1440" y2="273.6" stroke="#e5e7eb" stroke-width="1"/>
+<text x="78" y="278.6" text-anchor="end" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">2.7</text>
+<line x1="90" y1="253.2" x2="1440" y2="253.2" stroke="#e5e7eb" stroke-width="1"/>
+<text x="78" y="258.2" text-anchor="end" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">2.8</text>
+<line x1="90" y1="232.9" x2="1440" y2="232.9" stroke="#e5e7eb" stroke-width="1"/>
+<text x="78" y="237.9" text-anchor="end" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">2.9</text>
+<line x1="90" y1="212.5" x2="1440" y2="212.5" stroke="#e5e7eb" stroke-width="1"/>
+<text x="78" y="217.5" text-anchor="end" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">3.0</text>
+<line x1="90" y1="192.1" x2="1440" y2="192.1" stroke="#e5e7eb" stroke-width="1"/>
+<text x="78" y="197.1" text-anchor="end" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">3.1</text>
+<line x1="90" y1="171.8" x2="1440" y2="171.8" stroke="#e5e7eb" stroke-width="1"/>
+<text x="78" y="176.8" text-anchor="end" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">3.2</text>
+<line x1="90" y1="151.4" x2="1440" y2="151.4" stroke="#e5e7eb" stroke-width="1"/>
+<text x="78" y="156.4" text-anchor="end" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">3.3</text>
+<line x1="90" y1="131.1" x2="1440" y2="131.1" stroke="#e5e7eb" stroke-width="1"/>
+<text x="78" y="136.1" text-anchor="end" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">3.4</text>
+<line x1="90" y1="110.7" x2="1440" y2="110.7" stroke="#e5e7eb" stroke-width="1"/>
+<text x="78" y="115.7" text-anchor="end" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">3.5</text>
+<line x1="90" y1="90.4" x2="1440" y2="90.4" stroke="#e5e7eb" stroke-width="1"/>
+<text x="78" y="95.4" text-anchor="end" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">3.6</text>
+<line x1="90" y1="70.0" x2="1440" y2="70.0" stroke="#e5e7eb" stroke-width="1"/>
+<text x="78" y="75.0" text-anchor="end" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">3.7</text>
+<polyline fill="none" stroke="#0f766e" stroke-width="3" points="126.0,83.2 232.5,466.9 339.0,604.0 445.5,578.0 552.0,380.2 658.5,524.5 765.0,495.4 871.5,539.8 978.0,553.2 1084.5,444.7 1191.0,474.4 1297.5,438.5 1404.0,492.1"/>
+<circle cx="126.0" cy="83.2" r="5.5" fill="#0f766e" stroke="#ffffff" stroke-width="2"/>
+<text transform="translate(126.0,688) rotate(42)" text-anchor="end" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#374151">M=4,096 N=1,024 K=128</text>
+<circle cx="232.5" cy="466.9" r="5.5" fill="#0f766e" stroke="#ffffff" stroke-width="2"/>
+<text transform="translate(232.5,688) rotate(42)" text-anchor="end" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#374151">M=8,192 N=2,048 K=128</text>
+<circle cx="339.0" cy="604.0" r="5.5" fill="#0f766e" stroke="#ffffff" stroke-width="2"/>
+<text transform="translate(339.0,688) rotate(42)" text-anchor="end" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#374151">M=32,768 N=4,096 K=128</text>
+<circle cx="445.5" cy="578.0" r="5.5" fill="#0f766e" stroke="#ffffff" stroke-width="2"/>
+<text transform="translate(445.5,688) rotate(42)" text-anchor="end" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#374151">M=131,072 N=16,384 K=128</text>
+<circle cx="552.0" cy="380.2" r="5.5" fill="#0f766e" stroke="#ffffff" stroke-width="2"/>
+<text transform="translate(552.0,688) rotate(42)" text-anchor="end" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#374151">M=4,096 N=1,024 K=256</text>
+<circle cx="658.5" cy="524.5" r="5.5" fill="#0f766e" stroke="#ffffff" stroke-width="2"/>
+<text transform="translate(658.5,688) rotate(42)" text-anchor="end" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#374151">M=8,192 N=2,048 K=256</text>
+<circle cx="765.0" cy="495.4" r="5.5" fill="#0f766e" stroke="#ffffff" stroke-width="2"/>
+<text transform="translate(765.0,688) rotate(42)" text-anchor="end" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#374151">M=32,768 N=4,096 K=256</text>
+<circle cx="871.5" cy="539.8" r="5.5" fill="#0f766e" stroke="#ffffff" stroke-width="2"/>
+<text transform="translate(871.5,688) rotate(42)" text-anchor="end" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#374151">M=131,072 N=16,384 K=256</text>
+<circle cx="978.0" cy="553.2" r="5.5" fill="#0f766e" stroke="#ffffff" stroke-width="2"/>
+<text transform="translate(978.0,688) rotate(42)" text-anchor="end" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#374151">M=262,144 N=32,768 K=256</text>
+<circle cx="1084.5" cy="444.7" r="5.5" fill="#0f766e" stroke="#ffffff" stroke-width="2"/>
+<text transform="translate(1084.5,688) rotate(42)" text-anchor="end" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#374151">M=4,096 N=1,024 K=512</text>
+<circle cx="1191.0" cy="474.4" r="5.5" fill="#0f766e" stroke="#ffffff" stroke-width="2"/>
+<text transform="translate(1191.0,688) rotate(42)" text-anchor="end" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#374151">M=8,192 N=2,048 K=512</text>
+<circle cx="1297.5" cy="438.5" r="5.5" fill="#0f766e" stroke="#ffffff" stroke-width="2"/>
+<text transform="translate(1297.5,688) rotate(42)" text-anchor="end" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#374151">M=32,768 N=4,096 K=512</text>
+<circle cx="1404.0" cy="492.1" r="5.5" fill="#0f766e" stroke="#ffffff" stroke-width="2"/>
+<text transform="translate(1404.0,688) rotate(42)" text-anchor="end" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#374151">M=131,072 N=16,384 K=512</text>
+<rect x="1160" y="88" width="240" height="90" rx="10" fill="#ffffff" stroke="#e5e7eb"/>
+<text x="1176" y="116" font-size="14" font-family="Helvetica, Arial, sans-serif" fill="#111827">Mean speedup: 1.748x</text>
+<text x="1176" y="138" font-size="14" font-family="Helvetica, Arial, sans-serif" fill="#111827">Geomean speedup: 1.667x</text>
+<text x="1176" y="160" font-size="14" font-family="Helvetica, Arial, sans-serif" fill="#111827">Best speedup: 3.635x</text>
 </svg>

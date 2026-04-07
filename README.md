@@ -66,34 +66,34 @@ Input tensor is generated randomly in CPU pinned memory. both flash-kmeans and f
 We benchmarked the CUDA flash-assign kernels against the Triton `euclid_assign_triton` baseline on Modal with an NVIDIA L4 GPU, FP16 inputs, and a 13-shape sweep covering `K in {128, 256, 512}`. For each shape, we report the fastest CUDA kernel among `generic_main`, `aligned_generic_main`, `aligned_static_main`, `deferred_generic`, and `deferred_static`.
 
 Across this sweep, the best CUDA kernel per shape won on all 13 tested shapes:
-  - mean speedup: `1.680x`
-  - geometric-mean speedup: `1.611x`
-  - best speedup: `3.319x` on `M=4,096, N=1,024, K=128`
-  - worst speedup: `1.112x` on `M=32,768, N=4,096, K=128`
+  - mean speedup: `1.748x`
+  - geometric-mean speedup: `1.667x`
+  - best speedup: `3.635x` on `M=4,096, N=1,024, K=128`
+  - worst speedup: `1.077x` on `M=32,768, N=4,096, K=128`
 
-The strongest kernel is shape-dependent. `deferred_generic` is the most reliable general-purpose variant, `deferred_static` is strongest on the smaller `K=128` cases in this run, and the aligned kernels can win on some regular medium and large shapes.
+The strongest kernel is shape-dependent. `deferred_generic` remains the most reliable general-purpose variant, `deferred_static` wins the smallest `K=128` cases in this run, and `aligned_generic_main` is strongest on several aligned medium and large shapes.
 
-It is important to interpret these numbers correctly: a `3.319x` CUDA speedup here means `3.319x` faster than the Triton kernel, not `3.319x` faster than the older baselines reported above. In other words, this CUDA gain stacks on top of an already strong Triton implementation. The original Flash-KMeans results already report up to `17.9x` over the best prior baselines, `33x` over cuML, and `200x+` over FAISS. Combining those published Triton gains with our best measured CUDA-over-Triton gain gives an implied speedup of roughly `59.4x` over the best prior baselines, `109.5x` over cuML, and `663.8x` over FAISS. Using the mean CUDA gain from this sweep (`1.680x`) instead gives a more conservative implied speedup of roughly `30.1x` over the best prior baselines, `55.4x` over cuML, and `336.0x` over FAISS. These stacked numbers are directional rather than strictly apples-to-apples, since the original Triton results and this CUDA assignment benchmark were not measured on the exact same hardware and benchmark suite.
+It is important to interpret these numbers correctly: a `3.635x` CUDA speedup here means `3.635x` faster than the Triton kernel, not `3.635x` faster than the older baselines reported above. In other words, this CUDA gain stacks on top of an already strong Triton implementation. The original Flash-KMeans results already report up to `17.9x` over the best prior baselines, `33x` over cuML, and `200x+` over FAISS. Combining those published Triton gains with our best measured CUDA-over-Triton gain gives an implied speedup of roughly `65.1x` over the best prior baselines, `120.0x` over cuML, and `727.1x` over FAISS. Using the mean CUDA gain from this sweep (`1.748x`) instead gives a more conservative implied speedup of roughly `31.3x` over the best prior baselines, `57.7x` over cuML, and `349.6x` over FAISS. These stacked numbers are directional rather than strictly apples-to-apples, since the original Triton results and this CUDA assignment benchmark were not measured on the exact same hardware and benchmark suite.
 
 ![CUDA vs Triton speedup](assets/cuda_vs_triton_modal_13_final.svg)
 
 The exact best-vs-best results from this Modal run are:
 
-| Shape | Best CUDA kernel | CUDA ms | Triton ms | Speedup | Mismatch |
-| --- | --- | ---: | ---: | ---: | ---: |
-| `M=4,096 N=1,024 K=128` | `deferred_static` | 0.057 | 0.190 | 3.319x | 0 |
-| `M=8,192 N=2,048 K=128` | `deferred_static` | 0.113 | 0.201 | 1.778x | 0 |
-| `M=32,768 N=4,096 K=128` | `deferred_static` | 0.753 | 0.837 | 1.112x | 0 |
-| `M=131,072 N=16,384 K=128` | `aligned_static_main` | 10.818 | 13.004 | 1.202x | 0 |
-| `M=4,096 N=1,024 K=256` | `deferred_generic` | 0.091 | 0.192 | 2.121x | 0 |
-| `M=8,192 N=2,048 K=256` | `aligned_generic_main` | 0.188 | 0.282 | 1.498x | 0 |
-| `M=32,768 N=4,096 K=256` | `deferred_generic` | 1.373 | 2.193 | 1.597x | 0 |
-| `M=131,072 N=16,384 K=256` | `deferred_generic` | 18.826 | 26.074 | 1.385x | 0 |
-| `M=262,144 N=32,768 K=256` | `deferred_generic` | 74.481 | 98.551 | 1.323x | 1 |
-| `M=4,096 N=1,024 K=512` | `deferred_generic` | 0.157 | 0.198 | 1.257x | 0 |
-| `M=8,192 N=2,048 K=512` | `aligned_generic_main` | 0.377 | 0.650 | 1.725x | 0 |
-| `M=32,768 N=4,096 K=512` | `aligned_generic_main` | 2.652 | 5.036 | 1.899x | 0 |
-| `M=131,072 N=16,384 K=512` | `deferred_generic` | 36.270 | 58.922 | 1.625x | 0 |
+| Shape | Best CUDA kernel | CUDA ms | Triton ms | Speedup |
+| --- | --- | ---: | ---: | ---: |
+| `M=4,096 N=1,024 K=128` | `deferred_static` | 0.057 | 0.206 | 3.635x |
+| `M=8,192 N=2,048 K=128` | `deferred_static` | 0.115 | 0.201 | 1.750x |
+| `M=32,768 N=4,096 K=128` | `deferred_generic` | 0.769 | 0.828 | 1.077x |
+| `M=131,072 N=16,384 K=128` | `aligned_generic_main` | 10.907 | 13.139 | 1.205x |
+| `M=4,096 N=1,024 K=256` | `deferred_generic` | 0.091 | 0.197 | 2.176x |
+| `M=8,192 N=2,048 K=256` | `aligned_generic_main` | 0.191 | 0.281 | 1.467x |
+| `M=32,768 N=4,096 K=256` | `deferred_generic` | 1.370 | 2.206 | 1.610x |
+| `M=131,072 N=16,384 K=256` | `deferred_generic` | 18.846 | 26.240 | 1.392x |
+| `M=262,144 N=32,768 K=256` | `deferred_generic` | 74.662 | 99.031 | 1.326x |
+| `M=4,096 N=1,024 K=512` | `deferred_generic` | 0.158 | 0.294 | 1.859x |
+| `M=8,192 N=2,048 K=512` | `aligned_generic_main` | 0.380 | 0.652 | 1.714x |
+| `M=32,768 N=4,096 K=512` | `aligned_generic_main` | 2.671 | 5.048 | 1.890x |
+| `M=131,072 N=16,384 K=512` | `deferred_generic` | 36.332 | 59.092 | 1.626x |
 
 The full raw outputs for this run are under `artifacts/cuda_vs_triton_modal_13_final/`.
 

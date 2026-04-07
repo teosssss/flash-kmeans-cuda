@@ -160,12 +160,11 @@ def write_markdown_summary(path: Path, summary: dict, best_rows: list[dict], ski
         f"- Shapes requested: {summary['num_shapes_requested']}",
         f"- Shapes summarized: {summary['num_shapes_summarized']}",
         f"- Shapes skipped for correctness: {summary['num_shapes_skipped']}",
-        f"- Best-kernel mismatches across summarized shapes: {summary['total_best_kernel_mismatches']}",
         "",
         "## Best CUDA kernel per shape",
         "",
-        "| Shape | Best CUDA kernel | CUDA ms | Triton ms | Speedup | Mismatch |",
-        "| --- | --- | ---: | ---: | ---: | ---: |",
+        "| Shape | Best CUDA kernel | CUDA ms | Triton ms | Speedup |",
+        "| --- | --- | ---: | ---: | ---: |",
     ]
     if best_rows:
         lines[4:4] = [
@@ -178,7 +177,7 @@ def write_markdown_summary(path: Path, summary: dict, best_rows: list[dict], ski
     for row in best_rows:
         lines.append(
             f"| `{row['shape_label']}` | `{row['best_kernel']}` | {row['cuda_ms']:.3f} | "
-            f"{row['triton_ms']:.3f} | {row['speedup_vs_triton']:.3f}x | {row['mismatch']} |"
+            f"{row['triton_ms']:.3f} | {row['speedup_vs_triton']:.3f}x |"
         )
     if skipped_rows:
         lines.extend(
@@ -214,14 +213,15 @@ def write_speedup_svg(path: Path, best_rows: list[dict], summary: dict) -> None:
         )
         return
 
-    width = 1260
-    height = 760
+    width = 1560
+    height = 900
     left = 90
-    right = 40
+    right = 120
     top = 70
-    bottom = 150
+    bottom = 260
     plot_width = width - left - right
     plot_height = height - top - bottom
+    label_pad = 36
 
     min_speed = min(row["speedup_vs_triton"] for row in best_rows)
     max_speed = max(row["speedup_vs_triton"] for row in best_rows)
@@ -232,7 +232,8 @@ def write_speedup_svg(path: Path, best_rows: list[dict], summary: dict) -> None:
     def x_pos(idx: int) -> float:
         if len(best_rows) == 1:
             return left + plot_width / 2
-        return left + idx * plot_width / (len(best_rows) - 1)
+        usable_width = max(plot_width - 2 * label_pad, 1)
+        return left + label_pad + idx * usable_width / (len(best_rows) - 1)
 
     def y_pos(val: float) -> float:
         return top + plot_height - ((val - y_min) / y_span) * plot_height
@@ -271,7 +272,7 @@ def write_speedup_svg(path: Path, best_rows: list[dict], summary: dict) -> None:
         color = "#0f766e" if row["speedup_vs_triton"] >= 1.0 else "#b91c1c"
         elements.append(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="5.5" fill="{color}" stroke="#ffffff" stroke-width="2"/>')
         elements.append(
-            f'<text transform="translate({x:.1f},{height - bottom + 24}) rotate(35)" font-size="12" '
+            f'<text transform="translate({x:.1f},{height - bottom + 48}) rotate(42)" text-anchor="end" font-size="13" '
             'font-family="Helvetica, Arial, sans-serif" fill="#374151">'
             f"{format_svg_text(row['shape_label'])}</text>"
         )
