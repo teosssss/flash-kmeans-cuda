@@ -216,7 +216,7 @@ def write_speedup_svg(path: Path, best_rows: list[dict], summary: dict) -> None:
     row_height = 38
     width = 1560
     height = 180 + row_height * len(best_rows)
-    left = 340
+    left = 380
     right = 180
     top = 90
     bottom = 70
@@ -263,17 +263,16 @@ def write_speedup_svg(path: Path, best_rows: list[dict], summary: dict) -> None:
         y = y_pos(idx)
         x_end = x_pos(row["speedup_vs_triton"])
         color = "#0f766e" if row["speedup_vs_triton"] >= 1.0 else "#b91c1c"
-        label = f"{row['shape_label']}  [{row['best_kernel']}]"
         elements.append(
-            f'<text x="{left - 16}" y="{y + 5:.1f}" text-anchor="end" font-size="13" '
+            f'<text x="{left - 18}" y="{y + 6:.1f}" text-anchor="end" font-size="15" '
             'font-family="Helvetica, Arial, sans-serif" fill="#374151">'
-            f"{format_svg_text(label)}</text>"
+            f"{format_svg_text(row['shape_label'])}</text>"
         )
         elements.append(
             f'<rect x="{left}" y="{y - 11:.1f}" width="{max(x_end - left, 0):.1f}" height="22" rx="6" fill="{color}" opacity="0.92"/>'
         )
         elements.append(
-            f'<text x="{x_end + 10:.1f}" y="{y + 5:.1f}" font-size="13" '
+            f'<text x="{x_end + 10:.1f}" y="{y + 5:.1f}" font-size="14" '
             'font-family="Helvetica, Arial, sans-serif" fill="#111827">'
             f"{row['speedup_vs_triton']:.3f}x</text>"
         )

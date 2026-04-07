@@ -1,85 +1,85 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1560" height="674" viewBox="0 0 1560 674">
 <rect width="100%" height="100%" fill="#fffdf8"/>
-<text x="340" y="36" font-size="28" font-family="Helvetica, Arial, sans-serif" fill="#1f2937">CUDA vs Triton: best kernel per shape</text>
-<text x="340" y="58" font-size="15" font-family="Helvetica, Arial, sans-serif" fill="#4b5563">Speedup is Triton time divided by CUDA time. Values above 1.0 mean CUDA is faster.</text>
-<line x1="340.0" y1="90" x2="340.0" y2="604" stroke="#e5e7eb" stroke-width="1"/>
-<text x="340.0" y="628" text-anchor="middle" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">0.0</text>
-<line x1="396.2" y1="90" x2="396.2" y2="604" stroke="#e5e7eb" stroke-width="1"/>
-<text x="396.2" y="628" text-anchor="middle" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">0.2</text>
-<line x1="452.4" y1="90" x2="452.4" y2="604" stroke="#e5e7eb" stroke-width="1"/>
-<text x="452.4" y="628" text-anchor="middle" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">0.4</text>
-<line x1="508.6" y1="90" x2="508.6" y2="604" stroke="#e5e7eb" stroke-width="1"/>
-<text x="508.6" y="628" text-anchor="middle" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">0.6</text>
-<line x1="564.9" y1="90" x2="564.9" y2="604" stroke="#e5e7eb" stroke-width="1"/>
-<text x="564.9" y="628" text-anchor="middle" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">0.8</text>
-<line x1="621.1" y1="90" x2="621.1" y2="604" stroke="#d97706" stroke-width="2"/>
-<text x="621.1" y="628" text-anchor="middle" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">1.0</text>
-<line x1="677.3" y1="90" x2="677.3" y2="604" stroke="#e5e7eb" stroke-width="1"/>
-<text x="677.3" y="628" text-anchor="middle" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">1.2</text>
-<line x1="733.5" y1="90" x2="733.5" y2="604" stroke="#e5e7eb" stroke-width="1"/>
-<text x="733.5" y="628" text-anchor="middle" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">1.4</text>
-<line x1="789.7" y1="90" x2="789.7" y2="604" stroke="#e5e7eb" stroke-width="1"/>
-<text x="789.7" y="628" text-anchor="middle" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">1.6</text>
-<line x1="845.9" y1="90" x2="845.9" y2="604" stroke="#e5e7eb" stroke-width="1"/>
-<text x="845.9" y="628" text-anchor="middle" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">1.8</text>
-<line x1="902.2" y1="90" x2="902.2" y2="604" stroke="#e5e7eb" stroke-width="1"/>
-<text x="902.2" y="628" text-anchor="middle" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">2.0</text>
-<line x1="958.4" y1="90" x2="958.4" y2="604" stroke="#e5e7eb" stroke-width="1"/>
-<text x="958.4" y="628" text-anchor="middle" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">2.2</text>
-<line x1="1014.6" y1="90" x2="1014.6" y2="604" stroke="#e5e7eb" stroke-width="1"/>
-<text x="1014.6" y="628" text-anchor="middle" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">2.4</text>
-<line x1="1070.8" y1="90" x2="1070.8" y2="604" stroke="#e5e7eb" stroke-width="1"/>
-<text x="1070.8" y="628" text-anchor="middle" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">2.6</text>
-<line x1="1127.0" y1="90" x2="1127.0" y2="604" stroke="#e5e7eb" stroke-width="1"/>
-<text x="1127.0" y="628" text-anchor="middle" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">2.8</text>
-<line x1="1183.2" y1="90" x2="1183.2" y2="604" stroke="#e5e7eb" stroke-width="1"/>
-<text x="1183.2" y="628" text-anchor="middle" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">3.0</text>
-<line x1="1239.5" y1="90" x2="1239.5" y2="604" stroke="#e5e7eb" stroke-width="1"/>
-<text x="1239.5" y="628" text-anchor="middle" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">3.2</text>
-<line x1="1295.7" y1="90" x2="1295.7" y2="604" stroke="#e5e7eb" stroke-width="1"/>
-<text x="1295.7" y="628" text-anchor="middle" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">3.4</text>
-<line x1="1351.9" y1="90" x2="1351.9" y2="604" stroke="#e5e7eb" stroke-width="1"/>
-<text x="1351.9" y="628" text-anchor="middle" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">3.6</text>
-<line x1="340" y1="604" x2="1380" y2="604" stroke="#9ca3af" stroke-width="1.5"/>
-<text x="324" y="114.0" text-anchor="end" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#374151">M=4,096 N=1,024 K=128  [deferred_static]</text>
-<rect x="340" y="98.0" width="1021.8" height="22" rx="6" fill="#0f766e" opacity="0.92"/>
-<text x="1371.8" y="114.0" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#111827">3.635x</text>
-<text x="324" y="152.0" text-anchor="end" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#374151">M=8,192 N=2,048 K=128  [deferred_static]</text>
-<rect x="340" y="136.0" width="492.0" height="22" rx="6" fill="#0f766e" opacity="0.92"/>
-<text x="842.0" y="152.0" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#111827">1.750x</text>
-<text x="324" y="190.0" text-anchor="end" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#374151">M=32,768 N=4,096 K=128  [deferred_generic]</text>
-<rect x="340" y="174.0" width="302.6" height="22" rx="6" fill="#0f766e" opacity="0.92"/>
-<text x="652.6" y="190.0" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#111827">1.077x</text>
-<text x="324" y="228.0" text-anchor="end" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#374151">M=131,072 N=16,384 K=128  [aligned_generic_main]</text>
-<rect x="340" y="212.0" width="338.6" height="22" rx="6" fill="#0f766e" opacity="0.92"/>
-<text x="688.6" y="228.0" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#111827">1.205x</text>
-<text x="324" y="266.0" text-anchor="end" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#374151">M=4,096 N=1,024 K=256  [deferred_generic]</text>
-<rect x="340" y="250.0" width="611.7" height="22" rx="6" fill="#0f766e" opacity="0.92"/>
-<text x="961.7" y="266.0" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#111827">2.176x</text>
-<text x="324" y="304.0" text-anchor="end" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#374151">M=8,192 N=2,048 K=256  [aligned_generic_main]</text>
-<rect x="340" y="288.0" width="412.5" height="22" rx="6" fill="#0f766e" opacity="0.92"/>
-<text x="762.5" y="304.0" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#111827">1.467x</text>
-<text x="324" y="342.0" text-anchor="end" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#374151">M=32,768 N=4,096 K=256  [deferred_generic]</text>
-<rect x="340" y="326.0" width="452.6" height="22" rx="6" fill="#0f766e" opacity="0.92"/>
-<text x="802.6" y="342.0" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#111827">1.610x</text>
-<text x="324" y="380.0" text-anchor="end" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#374151">M=131,072 N=16,384 K=256  [deferred_generic]</text>
-<rect x="340" y="364.0" width="391.4" height="22" rx="6" fill="#0f766e" opacity="0.92"/>
-<text x="741.4" y="380.0" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#111827">1.392x</text>
-<text x="324" y="418.0" text-anchor="end" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#374151">M=262,144 N=32,768 K=256  [deferred_generic]</text>
-<rect x="340" y="402.0" width="372.8" height="22" rx="6" fill="#0f766e" opacity="0.92"/>
-<text x="722.8" y="418.0" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#111827">1.326x</text>
-<text x="324" y="456.0" text-anchor="end" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#374151">M=4,096 N=1,024 K=512  [deferred_generic]</text>
-<rect x="340" y="440.0" width="522.6" height="22" rx="6" fill="#0f766e" opacity="0.92"/>
-<text x="872.6" y="456.0" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#111827">1.859x</text>
-<text x="324" y="494.0" text-anchor="end" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#374151">M=8,192 N=2,048 K=512  [aligned_generic_main]</text>
-<rect x="340" y="478.0" width="481.6" height="22" rx="6" fill="#0f766e" opacity="0.92"/>
-<text x="831.6" y="494.0" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#111827">1.714x</text>
-<text x="324" y="532.0" text-anchor="end" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#374151">M=32,768 N=4,096 K=512  [aligned_generic_main]</text>
-<rect x="340" y="516.0" width="531.2" height="22" rx="6" fill="#0f766e" opacity="0.92"/>
-<text x="881.2" y="532.0" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#111827">1.890x</text>
-<text x="324" y="570.0" text-anchor="end" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#374151">M=131,072 N=16,384 K=512  [deferred_generic]</text>
-<rect x="340" y="554.0" width="457.2" height="22" rx="6" fill="#0f766e" opacity="0.92"/>
-<text x="807.2" y="570.0" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#111827">1.626x</text>
+<text x="380" y="36" font-size="28" font-family="Helvetica, Arial, sans-serif" fill="#1f2937">CUDA vs Triton: best kernel per shape</text>
+<text x="380" y="58" font-size="15" font-family="Helvetica, Arial, sans-serif" fill="#4b5563">Speedup is Triton time divided by CUDA time. Values above 1.0 mean CUDA is faster.</text>
+<line x1="380.0" y1="90" x2="380.0" y2="604" stroke="#e5e7eb" stroke-width="1"/>
+<text x="380.0" y="628" text-anchor="middle" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">0.0</text>
+<line x1="434.1" y1="90" x2="434.1" y2="604" stroke="#e5e7eb" stroke-width="1"/>
+<text x="434.1" y="628" text-anchor="middle" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">0.2</text>
+<line x1="488.1" y1="90" x2="488.1" y2="604" stroke="#e5e7eb" stroke-width="1"/>
+<text x="488.1" y="628" text-anchor="middle" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">0.4</text>
+<line x1="542.2" y1="90" x2="542.2" y2="604" stroke="#e5e7eb" stroke-width="1"/>
+<text x="542.2" y="628" text-anchor="middle" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">0.6</text>
+<line x1="596.2" y1="90" x2="596.2" y2="604" stroke="#e5e7eb" stroke-width="1"/>
+<text x="596.2" y="628" text-anchor="middle" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">0.8</text>
+<line x1="650.3" y1="90" x2="650.3" y2="604" stroke="#d97706" stroke-width="2"/>
+<text x="650.3" y="628" text-anchor="middle" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">1.0</text>
+<line x1="704.3" y1="90" x2="704.3" y2="604" stroke="#e5e7eb" stroke-width="1"/>
+<text x="704.3" y="628" text-anchor="middle" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">1.2</text>
+<line x1="758.4" y1="90" x2="758.4" y2="604" stroke="#e5e7eb" stroke-width="1"/>
+<text x="758.4" y="628" text-anchor="middle" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">1.4</text>
+<line x1="812.4" y1="90" x2="812.4" y2="604" stroke="#e5e7eb" stroke-width="1"/>
+<text x="812.4" y="628" text-anchor="middle" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">1.6</text>
+<line x1="866.5" y1="90" x2="866.5" y2="604" stroke="#e5e7eb" stroke-width="1"/>
+<text x="866.5" y="628" text-anchor="middle" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">1.8</text>
+<line x1="920.5" y1="90" x2="920.5" y2="604" stroke="#e5e7eb" stroke-width="1"/>
+<text x="920.5" y="628" text-anchor="middle" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">2.0</text>
+<line x1="974.6" y1="90" x2="974.6" y2="604" stroke="#e5e7eb" stroke-width="1"/>
+<text x="974.6" y="628" text-anchor="middle" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">2.2</text>
+<line x1="1028.6" y1="90" x2="1028.6" y2="604" stroke="#e5e7eb" stroke-width="1"/>
+<text x="1028.6" y="628" text-anchor="middle" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">2.4</text>
+<line x1="1082.7" y1="90" x2="1082.7" y2="604" stroke="#e5e7eb" stroke-width="1"/>
+<text x="1082.7" y="628" text-anchor="middle" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">2.6</text>
+<line x1="1136.8" y1="90" x2="1136.8" y2="604" stroke="#e5e7eb" stroke-width="1"/>
+<text x="1136.8" y="628" text-anchor="middle" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">2.8</text>
+<line x1="1190.8" y1="90" x2="1190.8" y2="604" stroke="#e5e7eb" stroke-width="1"/>
+<text x="1190.8" y="628" text-anchor="middle" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">3.0</text>
+<line x1="1244.9" y1="90" x2="1244.9" y2="604" stroke="#e5e7eb" stroke-width="1"/>
+<text x="1244.9" y="628" text-anchor="middle" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">3.2</text>
+<line x1="1298.9" y1="90" x2="1298.9" y2="604" stroke="#e5e7eb" stroke-width="1"/>
+<text x="1298.9" y="628" text-anchor="middle" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">3.4</text>
+<line x1="1353.0" y1="90" x2="1353.0" y2="604" stroke="#e5e7eb" stroke-width="1"/>
+<text x="1353.0" y="628" text-anchor="middle" font-size="13" font-family="Helvetica, Arial, sans-serif" fill="#6b7280">3.6</text>
+<line x1="380" y1="604" x2="1380" y2="604" stroke="#9ca3af" stroke-width="1.5"/>
+<text x="362" y="115.0" text-anchor="end" font-size="15" font-family="Helvetica, Arial, sans-serif" fill="#374151">M=4,096 N=1,024 K=128</text>
+<rect x="380" y="98.0" width="982.5" height="22" rx="6" fill="#0f766e" opacity="0.92"/>
+<text x="1372.5" y="114.0" font-size="14" font-family="Helvetica, Arial, sans-serif" fill="#111827">3.635x</text>
+<text x="362" y="153.0" text-anchor="end" font-size="15" font-family="Helvetica, Arial, sans-serif" fill="#374151">M=8,192 N=2,048 K=128</text>
+<rect x="380" y="136.0" width="473.1" height="22" rx="6" fill="#0f766e" opacity="0.92"/>
+<text x="863.1" y="152.0" font-size="14" font-family="Helvetica, Arial, sans-serif" fill="#111827">1.750x</text>
+<text x="362" y="191.0" text-anchor="end" font-size="15" font-family="Helvetica, Arial, sans-serif" fill="#374151">M=32,768 N=4,096 K=128</text>
+<rect x="380" y="174.0" width="291.0" height="22" rx="6" fill="#0f766e" opacity="0.92"/>
+<text x="681.0" y="190.0" font-size="14" font-family="Helvetica, Arial, sans-serif" fill="#111827">1.077x</text>
+<text x="362" y="229.0" text-anchor="end" font-size="15" font-family="Helvetica, Arial, sans-serif" fill="#374151">M=131,072 N=16,384 K=128</text>
+<rect x="380" y="212.0" width="325.6" height="22" rx="6" fill="#0f766e" opacity="0.92"/>
+<text x="715.6" y="228.0" font-size="14" font-family="Helvetica, Arial, sans-serif" fill="#111827">1.205x</text>
+<text x="362" y="267.0" text-anchor="end" font-size="15" font-family="Helvetica, Arial, sans-serif" fill="#374151">M=4,096 N=1,024 K=256</text>
+<rect x="380" y="250.0" width="588.2" height="22" rx="6" fill="#0f766e" opacity="0.92"/>
+<text x="978.2" y="266.0" font-size="14" font-family="Helvetica, Arial, sans-serif" fill="#111827">2.176x</text>
+<text x="362" y="305.0" text-anchor="end" font-size="15" font-family="Helvetica, Arial, sans-serif" fill="#374151">M=8,192 N=2,048 K=256</text>
+<rect x="380" y="288.0" width="396.6" height="22" rx="6" fill="#0f766e" opacity="0.92"/>
+<text x="786.6" y="304.0" font-size="14" font-family="Helvetica, Arial, sans-serif" fill="#111827">1.467x</text>
+<text x="362" y="343.0" text-anchor="end" font-size="15" font-family="Helvetica, Arial, sans-serif" fill="#374151">M=32,768 N=4,096 K=256</text>
+<rect x="380" y="326.0" width="435.2" height="22" rx="6" fill="#0f766e" opacity="0.92"/>
+<text x="825.2" y="342.0" font-size="14" font-family="Helvetica, Arial, sans-serif" fill="#111827">1.610x</text>
+<text x="362" y="381.0" text-anchor="end" font-size="15" font-family="Helvetica, Arial, sans-serif" fill="#374151">M=131,072 N=16,384 K=256</text>
+<rect x="380" y="364.0" width="376.3" height="22" rx="6" fill="#0f766e" opacity="0.92"/>
+<text x="766.3" y="380.0" font-size="14" font-family="Helvetica, Arial, sans-serif" fill="#111827">1.392x</text>
+<text x="362" y="419.0" text-anchor="end" font-size="15" font-family="Helvetica, Arial, sans-serif" fill="#374151">M=262,144 N=32,768 K=256</text>
+<rect x="380" y="402.0" width="358.5" height="22" rx="6" fill="#0f766e" opacity="0.92"/>
+<text x="748.5" y="418.0" font-size="14" font-family="Helvetica, Arial, sans-serif" fill="#111827">1.326x</text>
+<text x="362" y="457.0" text-anchor="end" font-size="15" font-family="Helvetica, Arial, sans-serif" fill="#374151">M=4,096 N=1,024 K=512</text>
+<rect x="380" y="440.0" width="502.5" height="22" rx="6" fill="#0f766e" opacity="0.92"/>
+<text x="892.5" y="456.0" font-size="14" font-family="Helvetica, Arial, sans-serif" fill="#111827">1.859x</text>
+<text x="362" y="495.0" text-anchor="end" font-size="15" font-family="Helvetica, Arial, sans-serif" fill="#374151">M=8,192 N=2,048 K=512</text>
+<rect x="380" y="478.0" width="463.1" height="22" rx="6" fill="#0f766e" opacity="0.92"/>
+<text x="853.1" y="494.0" font-size="14" font-family="Helvetica, Arial, sans-serif" fill="#111827">1.714x</text>
+<text x="362" y="533.0" text-anchor="end" font-size="15" font-family="Helvetica, Arial, sans-serif" fill="#374151">M=32,768 N=4,096 K=512</text>
+<rect x="380" y="516.0" width="510.8" height="22" rx="6" fill="#0f766e" opacity="0.92"/>
+<text x="900.8" y="532.0" font-size="14" font-family="Helvetica, Arial, sans-serif" fill="#111827">1.890x</text>
+<text x="362" y="571.0" text-anchor="end" font-size="15" font-family="Helvetica, Arial, sans-serif" fill="#374151">M=131,072 N=16,384 K=512</text>
+<rect x="380" y="554.0" width="439.6" height="22" rx="6" fill="#0f766e" opacity="0.92"/>
+<text x="829.6" y="570.0" font-size="14" font-family="Helvetica, Arial, sans-serif" fill="#111827">1.626x</text>
 <rect x="1100" y="108" width="240" height="90" rx="10" fill="#ffffff" stroke="#e5e7eb"/>
 <text x="1116" y="136" font-size="14" font-family="Helvetica, Arial, sans-serif" fill="#111827">Mean speedup: 1.748x</text>
 <text x="1116" y="158" font-size="14" font-family="Helvetica, Arial, sans-serif" fill="#111827">Geomean speedup: 1.667x</text>

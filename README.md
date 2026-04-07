@@ -102,21 +102,6 @@ python3 examples/benchmark_cuda_vs_triton.py \
   --out-dir /path/to/output_dir
 ```
 
-The default sweep in `benchmark_cuda_vs_triton.py` matches the 13-shape Modal figure above:
-  - `K=128`: `(4096,1024)`, `(8192,2048)`, `(32768,4096)`, `(131072,16384)`
-  - `K=256`: `(4096,1024)`, `(8192,2048)`, `(32768,4096)`, `(131072,16384)`, `(262144,32768)`
-  - `K=512`: `(4096,1024)`, `(8192,2048)`, `(32768,4096)`, `(131072,16384)`
-
-This is the canonical experiment used for the README summary and table.
-
-It writes:
-  - `all_kernels.csv`: every CUDA kernel variant against Triton for every tested shape.
-  - `best_vs_triton.csv`: the fastest CUDA kernel per shape.
-  - `summary.md`: a ready-to-paste Markdown summary with mean/geomean/best advantage.
-  - `best_vs_triton_speedup.svg`: a plot of `Triton time / CUDA time` per shape.
-
-The main README figure intentionally stays best-vs-best. The full kernel sweep still lives in `all_kernels.csv` for anyone who wants the tuning details without cluttering the top-level story.
-
 #### CUDA kernel notes
 
 | Kernel | Main optimization ideas |
