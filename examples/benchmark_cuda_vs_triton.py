@@ -213,38 +213,31 @@ def write_speedup_svg(path: Path, best_rows: list[dict], summary: dict) -> None:
         )
         return
 
+    row_height = 38
     width = 1560
-    height = 900
-    left = 90
-    right = 120
-    top = 70
-    bottom = 260
+    height = 180 + row_height * len(best_rows)
+    left = 340
+    right = 180
+    top = 90
+    bottom = 70
     plot_width = width - left - right
     plot_height = height - top - bottom
-    label_pad = 36
 
-    min_speed = min(row["speedup_vs_triton"] for row in best_rows)
     max_speed = max(row["speedup_vs_triton"] for row in best_rows)
-    y_min = min(0.9, math.floor(min_speed * 10.0) / 10.0)
-    y_max = max(1.1, math.ceil(max_speed * 10.0) / 10.0)
-    y_span = max(y_max - y_min, 0.2)
+    x_max = max(1.1, math.ceil(max_speed * 10.0) / 10.0)
+    x_span = x_max
 
-    def x_pos(idx: int) -> float:
-        if len(best_rows) == 1:
-            return left + plot_width / 2
-        usable_width = max(plot_width - 2 * label_pad, 1)
-        return left + label_pad + idx * usable_width / (len(best_rows) - 1)
+    def x_pos(val: float) -> float:
+        return left + (val / x_span) * plot_width
 
-    def y_pos(val: float) -> float:
-        return top + plot_height - ((val - y_min) / y_span) * plot_height
+    def y_pos(idx: int) -> float:
+        return top + idx * row_height + row_height / 2
 
     grid_values = []
-    tick = math.floor(y_min * 10.0) / 10.0
-    while tick <= y_max + 1e-6:
+    tick = 0.0
+    while tick <= x_max + 1e-6:
         grid_values.append(round(tick, 1))
-        tick += 0.1
-
-    points = " ".join(f"{x_pos(i):.1f},{y_pos(row['speedup_vs_triton']):.1f}" for i, row in enumerate(best_rows))
+        tick += 0.2
 
     elements = [
         f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}">',
@@ -254,27 +247,35 @@ def write_speedup_svg(path: Path, best_rows: list[dict], summary: dict) -> None:
     ]
 
     for val in grid_values:
-        y = y_pos(val)
+        x = x_pos(val)
         color = "#d97706" if abs(val - 1.0) < 1e-6 else "#e5e7eb"
         stroke_width = 2 if abs(val - 1.0) < 1e-6 else 1
-        elements.append(f'<line x1="{left}" y1="{y:.1f}" x2="{left + plot_width}" y2="{y:.1f}" stroke="{color}" stroke-width="{stroke_width}"/>')
+        elements.append(f'<line x1="{x:.1f}" y1="{top}" x2="{x:.1f}" y2="{top + plot_height}" stroke="{color}" stroke-width="{stroke_width}"/>')
         elements.append(
-            f'<text x="{left - 12}" y="{y + 5:.1f}" text-anchor="end" font-size="13" '
+            f'<text x="{x:.1f}" y="{top + plot_height + 24}" text-anchor="middle" font-size="13" '
             'font-family="Helvetica, Arial, sans-serif" fill="#6b7280">'
             f"{val:.1f}</text>"
         )
 
-    elements.append(f'<polyline fill="none" stroke="#0f766e" stroke-width="3" points="{points}"/>')
+    elements.append(f'<line x1="{left}" y1="{top + plot_height}" x2="{left + plot_width}" y2="{top + plot_height}" stroke="#9ca3af" stroke-width="1.5"/>')
 
     for idx, row in enumerate(best_rows):
-        x = x_pos(idx)
-        y = y_pos(row["speedup_vs_triton"])
+        y = y_pos(idx)
+        x_end = x_pos(row["speedup_vs_triton"])
         color = "#0f766e" if row["speedup_vs_triton"] >= 1.0 else "#b91c1c"
-        elements.append(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="5.5" fill="{color}" stroke="#ffffff" stroke-width="2"/>')
+        label = f"{row['shape_label']}  [{row['best_kernel']}]"
         elements.append(
-            f'<text transform="translate({x:.1f},{height - bottom + 48}) rotate(42)" text-anchor="end" font-size="13" '
+            f'<text x="{left - 16}" y="{y + 5:.1f}" text-anchor="end" font-size="13" '
             'font-family="Helvetica, Arial, sans-serif" fill="#374151">'
-            f"{format_svg_text(row['shape_label'])}</text>"
+            f"{format_svg_text(label)}</text>"
+        )
+        elements.append(
+            f'<rect x="{left}" y="{y - 11:.1f}" width="{max(x_end - left, 0):.1f}" height="22" rx="6" fill="{color}" opacity="0.92"/>'
+        )
+        elements.append(
+            f'<text x="{x_end + 10:.1f}" y="{y + 5:.1f}" font-size="13" '
+            'font-family="Helvetica, Arial, sans-serif" fill="#111827">'
+            f"{row['speedup_vs_triton']:.3f}x</text>"
         )
 
     legend_x = left + plot_width - 280
