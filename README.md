@@ -67,6 +67,16 @@ This repository also contains a CUDA flash-assign implementation based on the te
 
 The CUDA path includes four main variants: `generic_main`, `aligned_generic_main`, `aligned_static_main`, and the deferred-reduction family (`deferred_generic` / `deferred_static`). They combine `cp.async` staging, WMMA tensor-core MMA, register-resident partial reductions, aligned fast paths, and static specialization for common `D` values (`128/256/512`).
 
+#### CUDA Kernel Notes
+
+| Kernel | Main optimization ideas |
+| --- | --- |
+| `generic_main` | `cp.async` staging over `K`, WMMA tensor-core MMA, register-resident partial minima, shared-memory row reduction, and explicit tail handling for non-aligned shapes. |
+| `aligned_generic_main` | Same pipeline as `generic_main`, but removes edge guards on aligned shapes so the load path is cheaper and more regular. |
+| `aligned_static_main` | Adds compile-time specialization for common `D` values (`128/256/512`) so the compiler can unroll the inner loop more aggressively and simplify address arithmetic. |
+| `deferred_generic` | Keeps the tiled tensor-core pipeline, but defers the row-min writeback so more of the reduction stays in registers before the final merge. |
+| `deferred_static` | Combines deferred reduction with static-`D` specialization for the highest ceiling on common aligned shapes. |
+
 #### Triton vs CUDA
 
 We benchmarked these CUDA flash-assign kernels against the Triton `euclid_assign_triton` baseline on Modal with an NVIDIA L4 GPU, FP16 inputs, and a 13-shape sweep covering `D in {128, 256, 512}`. Here `N` is the number of points, `K` is the number of centroids, and `D` is the feature dimension.
