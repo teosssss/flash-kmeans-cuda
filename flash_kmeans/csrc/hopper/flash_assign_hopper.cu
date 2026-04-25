@@ -753,154 +753,6 @@ __global__ void flash_assign_hopper_k5_k7_wgmma256_kernel(
 #endif
 }
 
-__global__ void flash_assign_hopper_k5_k7_wgmma256_nomins_kernel(
-    const half* points,
-    const half* centroids,
-    const float* point_norms,
-    const float* centroid_norms,
-    int* output_ids,
-    float* output_dists,
-    int M,
-    int N,
-    int K,
-    const __grid_constant__ CUtensorMap tensorMapA,
-    const __grid_constant__ CUtensorMap tensorMapB
-) {
-#if !defined(__CUDA_ARCH__) || (__CUDA_ARCH__ < 900)
-    (void)points;
-    (void)centroids;
-    (void)point_norms;
-    (void)centroid_norms;
-    (void)output_ids;
-    (void)output_dists;
-    (void)M;
-    (void)N;
-    (void)K;
-    (void)tensorMapA;
-    (void)tensorMapB;
-    return;
-#else
-    extern __shared__ __align__(128) unsigned char shared_raw[];
-    HopperSharedStorageWgmma256& smem = *reinterpret_cast<HopperSharedStorageWgmma256*>(shared_raw);
-    const int tid = threadIdx.x;
-    const int warp = tid / kWarpSize;
-    const int warpgroup = warp / kWarpsPerWarpgroup;
-    const int warpgroup_tid = tid % kWarpgroupThreads;
-    const int warpgroup_lane = warpgroup_tid % kWarpSize;
-    const int warpgroup_warp = warpgroup_tid / kWarpSize;
-    const int block_row_start = blockIdx.x * HopperSharedStorageWgmma256::kTileM256;
-    if (block_row_start >= M) {
-        return;
-    }
-
-    if (tid == 0) {
-        for (int i = 0; i < HopperSharedStorageWgmma256::kStageCountWgmma256; ++i) {
-            init_barrier(&smem.full[i], 1, 0);
-            init_barrier(&smem.empty[i], kConsumerWarpgroups, 0);
-        }
-    }
-    __syncthreads();
-
-    for (int row = tid; row < HopperSharedStorageWgmma256::kTileM256; row += kThreadCount) {
-        const int global_row = block_row_start + row;
-        smem.x_norm[row] = (global_row < M) ? point_norms[global_row] : 0.0f;
-        smem.running_best_dist[row] = 0.0f;
-        smem.running_best_idx[row] = -1;
-    }
-    __syncthreads();
-
-    const int k_tiles = K / kTileK;
-    const int n_tiles = (N + 255) / 256;
-
-    if (warpgroup == 0) {
-        warpgroup_reg_dealloc<32>();
-        if (warpgroup_tid == 0) {
-            int phase = 0;
-            int stage = 0;
-            for (int n_tile = 0; n_tile < n_tiles; ++n_tile) {
-                for (int k_tile = 0; k_tile < k_tiles; ++k_tile) {
-                    if (stage == HopperSharedStorageWgmma256::kStageCountWgmma256) {
-                        stage = 0;
-                        phase ^= 1;
-                    }
-                    wait(&smem.empty[stage], phase);
-                    expect_bytes(&smem.full[stage], static_cast<uint32_t>((HopperSharedStorageWgmma256::kTileM256 * kTileK + HopperSharedStorageWgmma256::kTileN256 * kTileK) * sizeof(half)));
-                    load_async(&smem.a_tiles[stage][0], &tensorMapA, &smem.full[stage], k_tile * kTileK, block_row_start);
-                    load_async(&smem.b_tiles[stage][0], &tensorMapB, &smem.full[stage], k_tile * kTileK, n_tile * HopperSharedStorageWgmma256::kTileN256);
-                    ++stage;
-                }
-            }
-        }
-    } else {
-        warpgroup_reg_alloc<160>();
-        const int consumer_group = warpgroup - 1;
-        const int consumer_wg_tid = warpgroup_tid;
-        const int consumer_global_tid = consumer_group * kWarpgroupThreads + consumer_wg_tid;
-        if (warpgroup_lane == 0 && warpgroup_warp == 0) {
-            #pragma unroll
-            for (int i = 0; i < HopperSharedStorageWgmma256::kStageCountWgmma256; ++i) {
-                arrive(&smem.empty[i], 1);
-            }
-        }
-
-        int phase = 0;
-        int stage = 0;
-        for (int n_tile = 0; n_tile < n_tiles; ++n_tile) {
-            for (int col = consumer_global_tid; col < HopperSharedStorageWgmma256::kTileN256; col += kWarpgroupThreads * kConsumerWarpgroups) {
-                const int global_col = n_tile * HopperSharedStorageWgmma256::kTileN256 + col;
-                smem.c_norm[col] = (global_col < N) ? centroid_norms[global_col] : 0.0f;
-            }
-            consumer_barrier();
-            float accum[16][8];
-            #pragma unroll
-            for (int w = 0; w < 16; ++w) {
-                #pragma unroll
-                for (int r = 0; r < 8; ++r) {
-                    accum[w][r] = 0.0f;
-                }
-            }
-
-            for (int k_tile = 0; k_tile < k_tiles; ++k_tile) {
-                if (stage == HopperSharedStorageWgmma256::kStageCountWgmma256) {
-                    stage = 0;
-                    phase ^= 1;
-                }
-                wait(&smem.full[stage], phase);
-                warpgroup_arrive();
-
-                const half* wgmma_a = &smem.a_tiles[stage][consumer_group * HopperSharedStorageWgmma256::kConsumerRows256 * kPaddedTileK];
-                const half* wgmma_b = &smem.b_tiles[stage][0];
-                wgmma256<1, 1, 1, 0, 0>(accum, wgmma_a + 0 * kWgmmaK, wgmma_b + 0 * kWgmmaK);
-                wgmma256<1, 1, 1, 0, 0>(accum, wgmma_a + 1 * kWgmmaK, wgmma_b + 1 * kWgmmaK);
-                wgmma256<1, 1, 1, 0, 0>(accum, wgmma_a + 2 * kWgmmaK, wgmma_b + 2 * kWgmmaK);
-                wgmma256<1, 1, 1, 0, 0>(accum, wgmma_a + 3 * kWgmmaK, wgmma_b + 3 * kWgmmaK);
-
-                warpgroup_commit_batch();
-                warpgroup_wait<0>();
-                if (warpgroup_lane == 0 && warpgroup_warp == 0) {
-                    arrive(&smem.empty[stage], 1);
-                }
-                ++stage;
-            }
-
-            // Tiny sink so the compiler cannot drop the WGMMA accumulator work.
-            if (consumer_wg_tid == 0) {
-                smem.running_best_dist[consumer_group * HopperSharedStorageWgmma256::kConsumerRows256] += accum[0][0];
-            }
-            consumer_barrier();
-        }
-    }
-
-    __syncthreads();
-    if (tid == 0) {
-        output_ids[block_row_start] = 0;
-        if (output_dists != nullptr) {
-            output_dists[block_row_start] = smem.running_best_dist[0] + smem.running_best_dist[HopperSharedStorageWgmma256::kConsumerRows256];
-        }
-    }
-#endif
-}
-
 __global__ void flash_assign_hopper_k5_k7_wgmma256_persistent_kernel(
     const half* points,
     const half* centroids,
@@ -1644,65 +1496,6 @@ cudaError_t launch_flash_assign_hopper_complete_k5_k7_wgmma256(
         stream);
 }
 
-cudaError_t launch_flash_assign_hopper_k5_k7_wgmma256_nomins(
-    const half* points,
-    const half* centroids,
-    const float* point_norms,
-    const float* centroid_norms,
-    int* output_ids,
-    float* output_dists,
-    int M,
-    int N,
-    int K,
-    cudaStream_t stream
-) {
-    int device_index = -1;
-    cudaError_t err = cudaGetDevice(&device_index);
-    if (err != cudaSuccess) {
-        return err;
-    }
-
-    cudaDeviceProp props{};
-    err = cudaGetDeviceProperties(&props, device_index);
-    if (err != cudaSuccess) {
-        return err;
-    }
-    if (props.major < 9) {
-        return cudaErrorNotSupported;
-    }
-    if ((K % kTileK) != 0) {
-        return cudaErrorInvalidValue;
-    }
-
-    const CUtensorMap tensor_map_a = create_tensor_map<HopperSharedStorageWgmma256::kTileM256, kTileK>(points, M, K);
-    const CUtensorMap tensor_map_b = create_tensor_map<HopperSharedStorageWgmma256::kTileN256, kTileK>(centroids, N, K);
-    const dim3 block(kThreadCount);
-    const dim3 grid((M + HopperSharedStorageWgmma256::kTileM256 - 1) / HopperSharedStorageWgmma256::kTileM256);
-    const size_t smem_bytes = flash_assign_hopper_smem_bytes_wgmma256();
-
-    err = cudaFuncSetAttribute(
-        flash_assign_hopper_k5_k7_wgmma256_nomins_kernel,
-        cudaFuncAttributeMaxDynamicSharedMemorySize,
-        static_cast<int>(smem_bytes));
-    if (err != cudaSuccess) {
-        return err;
-    }
-
-    flash_assign_hopper_k5_k7_wgmma256_nomins_kernel<<<grid, block, smem_bytes, stream>>>(
-        points,
-        centroids,
-        point_norms,
-        centroid_norms,
-        output_ids,
-        output_dists,
-        M,
-        N,
-        K,
-        tensor_map_a,
-        tensor_map_b);
-    return cudaGetLastError();
-}
-
 cudaError_t launch_flash_assign_hopper_k5_k7_wgmma256_persistent(
     const half* points,
     const half* centroids,
@@ -2167,40 +1960,6 @@ cudaError_t benchmark_flash_assign_hopper_precomputed(
                 tensor_map_b);
         }
     } else if (variant == 1) {
-        const CUtensorMap tensor_map_a = create_tensor_map<HopperSharedStorageWgmma256::kTileM256, kTileK>(points, M, K);
-        const CUtensorMap tensor_map_b = create_tensor_map<HopperSharedStorageWgmma256::kTileN256, kTileK>(centroids, N, K);
-        const dim3 grid((M + HopperSharedStorageWgmma256::kTileM256 - 1) / HopperSharedStorageWgmma256::kTileM256);
-        const size_t smem_bytes = flash_assign_hopper_smem_bytes_wgmma256();
-        err = cudaFuncSetAttribute(
-            flash_assign_hopper_k5_k7_wgmma256_nomins_kernel,
-            cudaFuncAttributeMaxDynamicSharedMemorySize,
-            static_cast<int>(smem_bytes));
-        if (err != cudaSuccess) {
-            cudaEventDestroy(start);
-            cudaEventDestroy(end);
-            return err;
-        }
-        err = cudaEventRecord(start, stream);
-        if (err != cudaSuccess) {
-            cudaEventDestroy(start);
-            cudaEventDestroy(end);
-            return err;
-        }
-        for (int i = 0; i < iters; ++i) {
-            flash_assign_hopper_k5_k7_wgmma256_nomins_kernel<<<grid, block, smem_bytes, stream>>>(
-                points,
-                centroids,
-                point_norms,
-                centroid_norms,
-                output_ids,
-                output_dists,
-                M,
-                N,
-                K,
-                tensor_map_a,
-                tensor_map_b);
-        }
-    } else if (variant == 2) {
         if (K > HopperSharedStorageWgmma256ACache::kMaxKTiles * kTileK) {
             cudaEventDestroy(start);
             cudaEventDestroy(end);
@@ -2239,7 +1998,7 @@ cudaError_t benchmark_flash_assign_hopper_precomputed(
                 tensor_map_a,
                 tensor_map_b);
         }
-    } else if (variant == 3) {
+    } else if (variant == 2) {
         const CUtensorMap tensor_map_a = create_tensor_map<HopperSharedStorageWgmma256::kTileM256, kTileK>(points, M, K);
         const CUtensorMap tensor_map_b = create_tensor_map<HopperSharedStorageWgmma256::kTileN256, kTileK>(centroids, N, K);
         const dim3 grid(props.multiProcessorCount);
@@ -2273,7 +2032,7 @@ cudaError_t benchmark_flash_assign_hopper_precomputed(
                 tensor_map_a,
                 tensor_map_b);
         }
-    } else if (variant == 4) {
+    } else if (variant == 3) {
         constexpr int kClusterSize = 4;
         const int cluster_count = props.multiProcessorCount / kClusterSize;
         if (cluster_count <= 0) {
@@ -2314,7 +2073,7 @@ cudaError_t benchmark_flash_assign_hopper_precomputed(
                 tensor_map_a,
                 tensor_map_b);
         }
-    } else if (variant == 5) {
+    } else if (variant == 4) {
         constexpr int kClusterSize = 8;
         const int cluster_count = props.multiProcessorCount / kClusterSize;
         if (cluster_count <= 0) {

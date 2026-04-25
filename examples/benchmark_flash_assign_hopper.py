@@ -16,7 +16,6 @@ CSRC = ROOT / "flash_kmeans" / "csrc" / "hopper"
 KERNELS = [
     "hopper_k5_k7_v1",
     "hopper_k5_k7_wgmma256",
-    "hopper_k5_k7_wgmma256_nomins",
     "hopper_k5_k7_wgmma256_acache",
     "hopper_k5_k7_wgmma256_persistent",
     "hopper_k5_k7_wgmma256_persistent_cluster4",
@@ -166,11 +165,9 @@ def main():
                 hopper_run, ids, dists, point_norms, centroid_norms = make_hopper_assign_only(ext, points, centroids, kernel_name)
                 hopper_run()
                 torch.cuda.synchronize()
-                check_correctness = kernel_name != "hopper_k5_k7_wgmma256_nomins"
-                mismatch = int(torch.ne(ids.cpu(), ref.cpu()).sum().item()) if check_correctness else -1
+                mismatch = int(torch.ne(ids.cpu(), ref.cpu()).sum().item())
                 if kernel_name in (
                     "hopper_k5_k7_wgmma256",
-                    "hopper_k5_k7_wgmma256_nomins",
                     "hopper_k5_k7_wgmma256_acache",
                     "hopper_k5_k7_wgmma256_persistent",
                     "hopper_k5_k7_wgmma256_persistent_cluster4",
@@ -196,7 +193,7 @@ def main():
                     f"event_ms={cuda_ms:.3f} "
                     f"wall_ms={wall_ms:.3f} "
                     f"speedup={triton_ms / cuda_ms:.3f} "
-                    f"mismatch={mismatch if check_correctness else 'skipped'}"
+                    f"mismatch={mismatch}"
                 )
 
         if args.mode in ("full", "both"):

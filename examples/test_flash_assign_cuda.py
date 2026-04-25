@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import os
 from pathlib import Path
 
 import torch
@@ -10,8 +11,9 @@ from flash_kmeans.assign_euclid_triton import euclid_assign_triton
 
 
 def _load_extension():
+    os.environ.setdefault("TORCH_CUDA_ARCH_LIST", "8.9")
     repo_root = Path(__file__).resolve().parents[1]
-    csrc = repo_root / "flash_kmeans" / "csrc"
+    csrc = repo_root / "flash_kmeans" / "csrc" / "ampere"
     return load(
         name="flash_assign_cuda_ext",
         sources=[

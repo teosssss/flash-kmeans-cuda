@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import time
 from typing import Optional
+from pathlib import Path
 import torch
 
 try:
@@ -12,6 +13,63 @@ try:
     _HAS_TRITON_IMPL = True
 except Exception:
     _HAS_TRITON_IMPL = False
+
+_CUDA_ASSIGN_EXT = None
+
+
+def _load_cuda_assign_ext():
+    global _CUDA_ASSIGN_EXT
+    if _CUDA_ASSIGN_EXT is None:
+        from torch.utils.cpp_extension import load
+
+        root = Path(__file__).resolve().parents[1]
+        csrc = root / "flash_kmeans" / "csrc" / "ampere"
+        _CUDA_ASSIGN_EXT = load(
+            name="flash_assign_large_cuda_ext",
+            sources=[
+                str(csrc / "flash_assign_all_kernels_tmp_bind.cpp"),
+                str(csrc / "flash_assign.cu"),
+            ],
+            extra_cflags=["-O3"],
+            extra_cuda_cflags=["-O3", "--use_fast_math"],
+            verbose=False,
+        )
+    return _CUDA_ASSIGN_EXT
+
+
+def _assign_block(
+    x_block: torch.Tensor,
+    centroids: torch.Tensor,
+    cluster_ids_view: torch.Tensor,
+    x_sq_block: Optional[torch.Tensor],
+    c_sq: Optional[torch.Tensor],
+    assign_backend: str,
+    cuda_kernel_name: str,
+) -> torch.Tensor:
+    if assign_backend == "triton":
+        assert x_sq_block is not None
+        assert c_sq is not None
+        return euclid_assign_triton(
+            x_block.unsqueeze(0),
+            centroids.unsqueeze(0),
+            x_sq_block.unsqueeze(0),
+            out=cluster_ids_view.unsqueeze(0),
+            c_sq=c_sq.unsqueeze(0),
+        )
+
+    if assign_backend != "cuda":
+        raise ValueError(f"Unsupported assign_backend: {assign_backend}")
+
+    ext = _load_cuda_assign_ext()
+    x_block_half = x_block if x_block.dtype == torch.float16 else x_block.to(torch.float16)
+    centroids_half = centroids if centroids.dtype == torch.float16 else centroids.to(torch.float16)
+    cluster_ids_block, _, _, _ = ext.flash_assign_all_kernels_tmp_cuda(
+        x_block_half.contiguous(),
+        centroids_half.contiguous(),
+        cuda_kernel_name,
+    )
+    cluster_ids_view.copy_(cluster_ids_block)
+    return cluster_ids_view.unsqueeze(0)
 
 
 def kmeans_largeN(
@@ -24,6 +82,8 @@ def kmeans_largeN(
     init_centroids: Optional[torch.Tensor] = None,
     device: Optional[torch.device] = None,
     dtype: Optional[torch.dtype] = None,
+    assign_backend: str = "triton",
+    cuda_kernel_name: str = "deferred_generic",
 ) -> tuple[torch.Tensor, torch.Tensor]:
     """
     flash-kmeans for large n_samples (N), x is on CPU. (too large to fit into GPU memory)
@@ -43,7 +103,7 @@ def kmeans_largeN(
     K = n_clusters
 
     num_blocks = (N + BLOCK_N - 1) // BLOCK_N
-    x_sq_blocks = [None] * num_blocks
+    x_sq_blocks = [None] * num_blocks if assign_backend == "triton" else []
 
     update_stream = torch.cuda.Stream()
     buf_size = 2
@@ -65,7 +125,7 @@ def kmeans_largeN(
         with torch.cuda.stream(update_stream):
             centroid_sums = torch.zeros((K, D), device=device, dtype=torch.float32)
             centroid_cnts = torch.zeros((K,), device=device, dtype=torch.int32)
-            c_sq = (centroids**2).sum(dim=-1) # (K, )
+            c_sq = (centroids**2).sum(dim=-1) if assign_backend == "triton" else None
             init_event.record(update_stream)
 
         for n_start in range(0, N, BLOCK_N):
@@ -78,31 +138,29 @@ def kmeans_largeN(
                 work_streams[flag].wait_event(init_event)
                 
                 x_block = x[n_start:n_end].to("cuda", non_blocking=True, dtype=dtype)  # x_block : (n, D)
-                n = n_end - n_start
-
-                # pre-compute squared L2 norm of all points (constant during iterations)
-                if x_sq_blocks[idx] is None:
+                if assign_backend == "triton" and x_sq_blocks[idx] is None:
                     x_sq_blocks[idx] = (x_block**2).sum(dim=-1)
 
                 # wait for previous block to done all computes, unsure the overlap
                 if idx > 0:
                     work_streams[flag].wait_event(done_events[idx - 1])
 
-                # calculate assignments for this block
-                cluster_ids_block = euclid_assign_triton(
-                    x_block.unsqueeze(0),  # (1, n, D)
-                    centroids.unsqueeze(0),  # (1, K, D)
-                    x_sq_blocks[idx].unsqueeze(0),  # (1, n)
-                    out=cluster_ids[n_start:n_end].unsqueeze(0),  # (1, n)
-                    c_sq=c_sq.unsqueeze(0),  # (1, K)
-                )  # (1, n)
+                cluster_ids_block = _assign_block(
+                    x_block=x_block,
+                    centroids=centroids,
+                    cluster_ids_view=cluster_ids[n_start:n_end],
+                    x_sq_block=x_sq_blocks[idx] if assign_backend == "triton" else None,
+                    c_sq=c_sq,
+                    assign_backend=assign_backend,
+                    cuda_kernel_name=cuda_kernel_name,
+                )
 
                 new_centroids = triton_centroid_update_sorted_euclid(
-                    x=x_block.unsqueeze(0),  # (1, n, D)
-                    cluster_ids=cluster_ids_block,  # (1, n)
-                    old_centroids=centroids.unsqueeze(0),  # (1, K, D)
-                    centroid_sums=centroid_sums.unsqueeze(0),  # (1, K, D)
-                    centroid_cnts=centroid_cnts.unsqueeze(0),  # (1, K)
+                    x=x_block.unsqueeze(0),
+                    cluster_ids=cluster_ids_block,
+                    old_centroids=centroids.unsqueeze(0),
+                    centroid_sums=centroid_sums.unsqueeze(0),
+                    centroid_cnts=centroid_cnts.unsqueeze(0),
                     calculate_new=is_last_block,
                 )
 
@@ -132,6 +190,8 @@ def kmeans_largeN_assign(
     BLOCK_N=1048576,
     device: Optional[torch.device] = None,
     dtype: Optional[torch.dtype] = None,
+    assign_backend: str = "triton",
+    cuda_kernel_name: str = "deferred_generic",
 ) -> tuple[torch.Tensor, torch.Tensor]:
     """
     flash-kmeans assign cluster_ids for each samples in Euclidean distance.
@@ -153,7 +213,7 @@ def kmeans_largeN_assign(
     assert centroids.shape[1] == D, "centroids and x must have the same feature dimension"
 
     num_blocks = (N + BLOCK_N - 1) // BLOCK_N
-    x_sq_blocks = [None] * num_blocks
+    x_sq_blocks = [None] * num_blocks if assign_backend == "triton" else []
 
     update_stream = torch.cuda.Stream()
     buf_size = 2
@@ -166,37 +226,34 @@ def kmeans_largeN_assign(
         cluster_ids = torch.empty((N,), device=device, dtype=torch.int32)
 
     with torch.cuda.stream(update_stream):
-        c_sq = (centroids**2).sum(dim=-1) # (K, )
+        c_sq = (centroids**2).sum(dim=-1) if assign_backend == "triton" else None
         init_event.record(update_stream)
 
     for n_start in range(0, N, BLOCK_N):
         idx = n_start // BLOCK_N
         flag = idx % buf_size # flag for buffer
         n_end = min(n_start + BLOCK_N, N)
-        is_last_block = n_end == N
-
         with torch.cuda.stream(work_streams[flag]):
             work_streams[flag].wait_event(init_event)
             
             x_block = x[n_start:n_end].to("cuda", non_blocking=True, dtype=dtype)  # x_block : (n, D)
-            n = n_end - n_start
 
-            # pre-compute squared L2 norm of all points (constant during iterations)
-            if x_sq_blocks[idx] is None:
+            if assign_backend == "triton" and x_sq_blocks[idx] is None:
                 x_sq_blocks[idx] = (x_block**2).sum(dim=-1)
 
             # wait for previous block to done all computes, unsure the overlap
             if idx > 0:
                 work_streams[flag].wait_event(done_events[idx - 1])
 
-            # calculate assignments for this block
-            euclid_assign_triton(
-                x_block.unsqueeze(0),  # (1, n, D)
-                centroids.unsqueeze(0),  # (1, K, D)
-                x_sq_blocks[idx].unsqueeze(0),  # (1, n)
-                out=cluster_ids[n_start:n_end].unsqueeze(0),  # (1, n)
-                c_sq=c_sq.unsqueeze(0),  # (1, K)
-            )  # (1, n)
+            _assign_block(
+                x_block=x_block,
+                centroids=centroids,
+                cluster_ids_view=cluster_ids[n_start:n_end],
+                x_sq_block=x_sq_blocks[idx] if assign_backend == "triton" else None,
+                c_sq=c_sq,
+                assign_backend=assign_backend,
+                cuda_kernel_name=cuda_kernel_name,
+            )
 
             # This will mark the final block in the stream, record will overwrite previous one
             done_events[idx].record(work_streams[flag])

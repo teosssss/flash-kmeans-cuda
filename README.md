@@ -6,7 +6,7 @@
 
 IO-aware batched K-Means clustering implemented with Triton GPU kernels. This repository provides the official K-Means implementation of [Sparse VideoGen2](https://arxiv.org/pdf/2505.18875).
 
-This fork also carries CUDA flash-assign experiments for Ampere/Ada and Hopper GPUs under `flash_kmeans/csrc/`.
+This fork also carries CUDA flash-assign experiments for Ampere/Ada and Hopper GPUs under `flash_kmeans/csrc/`, split into `flash_kmeans/csrc/ampere/` and `flash_kmeans/csrc/hopper/`.
 
 ![Teasor](assets/FlashAssignAndTime.png)
 
@@ -126,7 +126,6 @@ Hopper-specific CUDA experiments live under [`flash_kmeans/csrc/hopper`](flash_k
 | --- | --- |
 | `hopper_k5_k7_v1` | First Hopper bring-up using the non-persistent Kernel 5 structure from `fast.cu` with Kernel 7 `mbarrier` + TMA synchronization. |
 | `hopper_k5_k7_wgmma256` | `m64n256k16` WGMMA path with triple-buffered TMA loads and deferred per-lane minima finalized after the centroid loop. |
-| `hopper_k5_k7_wgmma256_nomins` | Ablation of the `wgmma256` path that removes the lane-min / final-min work to isolate the reduction overhead. |
 | `hopper_k5_k7_wgmma256_persistent` | Persistent one-CTA-per-SM style scheduler over point tiles, keeping the same local-SMEM `A` and `B` path. |
 | `hopper_k5_k7_wgmma256_persistent_cluster4` | Cluster size 4 persistent kernel that multicasts centroid `B` tiles to local SMEM across the cluster. |
 | `hopper_k5_k7_wgmma256_persistent_cluster8` | Same multicast experiment at cluster size 8. |
@@ -136,17 +135,16 @@ The current Hopper experiments were benchmarked on Modal with an NVIDIA H100 GPU
 - `hopper_k5_k7_wgmma256` is the strongest non-persistent baseline.
 - `hopper_k5_k7_wgmma256_persistent` is usually flat to slightly better than the non-persistent version.
 - cluster multicast (`cluster4` / `cluster8`) is correct on aligned shapes, but currently slower on larger workloads because cluster-wide barrier cost dominates the saved centroid loads.
-- the `nomins` ablation shows the lane-min / final-reduce path is a real cost center, saving roughly `14%` to `26%` of kernel event time on the sampled shapes.
 
 Representative H100 results from `examples/benchmark_flash_assign_hopper.py`:
 
-| Shape | Triton ms | `wgmma256` | `nomins` | `persistent` | `cluster4` | `cluster8` |
-| --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| `N=4,096 K=1,024 D=128` | 0.036 | 0.016 | 0.012 | 0.016 | 0.017 | 0.017 |
-| `N=8,192 K=2,048 D=256` | 0.047 | 0.037 | 0.028 | 0.037 | 0.039 | 0.039 |
-| `N=16,384 K=2,048 D=512` | 0.154 | 0.058 | 0.049 | 0.057 | 0.112 | 0.114 |
-| `N=32,768 K=4,096 D=256` | 0.230 | 0.137 | 0.102 | 0.135 | 0.277 | 0.282 |
-| `N=32,768 K=4,096 D=512` | 0.582 | 0.217 | 0.187 | 0.216 | 0.425 | 0.428 |
+| Shape | Triton ms | `wgmma256` | `persistent` | `cluster4` | `cluster8` |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| `N=4,096 K=1,024 D=128` | 0.036 | 0.016 | 0.016 | 0.017 | 0.017 |
+| `N=8,192 K=2,048 D=256` | 0.047 | 0.037 | 0.037 | 0.039 | 0.039 |
+| `N=16,384 K=2,048 D=512` | 0.154 | 0.058 | 0.057 | 0.112 | 0.114 |
+| `N=32,768 K=4,096 D=256` | 0.230 | 0.137 | 0.135 | 0.277 | 0.282 |
+| `N=32,768 K=4,096 D=512` | 0.582 | 0.217 | 0.216 | 0.425 | 0.428 |
 
 You can rerun the Hopper sweep with:
 
@@ -154,7 +152,7 @@ You can rerun the Hopper sweep with:
 python3 examples/benchmark_flash_assign_hopper.py \
   --mode assign-only \
   --cases 4096,1024,128 8192,2048,256 16384,2048,512 32768,4096,256 32768,4096,512 \
-  --kernels hopper_k5_k7_wgmma256 hopper_k5_k7_wgmma256_nomins hopper_k5_k7_wgmma256_persistent hopper_k5_k7_wgmma256_persistent_cluster4 hopper_k5_k7_wgmma256_persistent_cluster8
+  --kernels hopper_k5_k7_wgmma256 hopper_k5_k7_wgmma256_persistent hopper_k5_k7_wgmma256_persistent_cluster4 hopper_k5_k7_wgmma256_persistent_cluster8
 ```
 
 #### Representative Assignment Regimes

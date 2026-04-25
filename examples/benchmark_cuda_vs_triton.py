@@ -17,7 +17,7 @@ from flash_kmeans.assign_euclid_triton import euclid_assign_triton
 
 
 ROOT = Path(__file__).resolve().parents[1]
-CSRC = ROOT / "flash_kmeans" / "csrc"
+CSRC = ROOT / "flash_kmeans" / "csrc" / "ampere"
 
 KERNELS = [
     "generic_main",
